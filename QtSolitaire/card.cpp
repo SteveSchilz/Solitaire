@@ -9,6 +9,8 @@
 #include <QRandomGenerator>
 #include <QWidget>
 #include <QDebug>
+#include <QGraphicsSvgItem>
+
 
 static const int CARD_WIDTH {120};
 static const int CARD_HEIGHT {CARD_WIDTH*5/4};
@@ -37,9 +39,14 @@ Card::~Card() {
 
 }
 
-void Card::setPixmap(QString path) {
+void Card::setImage(QString path) {
 
-    mImage = new QPixmap(path);
+    mImage = new QGraphicsSvgItem(path, this);
+    // Note: both this and setting scaling in paint are necessary!
+    if (mImage) {
+        mImage->setScale(0.08);
+    }
+
 }
 
 
@@ -53,9 +60,9 @@ void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
-    if (mImage && !mImage->isNull()) {
-        painter->scale(.04, .04);
-        painter->drawPixmap(QPointF(-15 * 4.4, -50 * 3.54), *mImage);
+    if (mImage) { //&& !mImage->isNull()) {
+        painter->scale(.08, .08);
+        mImage->paint(painter, option, widget);
 
     } else {
         painter->setPen(Qt::NoPen);

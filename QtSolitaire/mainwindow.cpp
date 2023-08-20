@@ -31,9 +31,9 @@ MainWindow::MainWindow(QWidget *parent)
         }
         Card *item = new Card(value, suite, nullptr);
         switch(value) {
-        case CardValue::KING: item->setPixmap(":/images/King-Hearts.png"); break;
-        case CardValue::QUEEN: item->setPixmap(":/images/Queen-Hearts.png"); break;
-        case CardValue::JACK: item->setPixmap(":/images/Jack-Hearts.png"); break;
+        case CardValue::KING: item->setImage(":/images/King-Hearts.svg"); break;
+        case CardValue::QUEEN: item->setImage(":/images/Queen-Hearts.svg"); break;
+        case CardValue::JACK: item->setImage(":/images/Jack-Hearts.svg"); break;
         default:    break;
         }
 

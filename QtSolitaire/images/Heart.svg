@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="12.26453mm"
+   height="9.9062681mm"
+   viewBox="0 0 12.26453 9.9062682"
+   version="1.1"
+   id="svg1"
+   inkscape:export-filename="Diamond.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   sodipodi:docname="Heart.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="6.3032481"
+     inkscape:cx="23.083337"
+     inkscape:cy="18.720507"
+     inkscape:window-width="1312"
+     inkscape:window-height="449"
+     inkscape:window-x="150"
+     inkscape:window-y="40"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-101.35697,-135.24236)">
+    <path
+       fill-rule="nonzero"
+       fill="#ed0000"
+       fill-opacity="1"
+       d="m 112.28204,135.78762 c -2.0767,-1.48553 -4.64397,0.41341 -4.79281,1.54891 -0.14883,-1.1355 -2.71748,-3.03444 -4.7928,-1.54891 -0.93984,0.67248 -1.33946,1.61782 -1.33946,2.61827 0,3.60357 4.34633,5.42258 6.13226,6.74274 1.82316,-1.39595 6.13227,-3.31831 6.13227,-6.74274 0,-1.00045 -0.39963,-1.94579 -1.33946,-2.61827"
+       id="path1039"
+       style="stroke-width:0.352778" />
+  </g>
+</svg>

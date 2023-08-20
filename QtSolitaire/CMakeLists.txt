@@ -11,8 +11,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
+
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS SvgWidgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS SvgWidgets)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -49,7 +53,11 @@ else()
     endif()
 endif()
 
-target_link_libraries(QtSolitaire PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Core)
+target_link_libraries(QtSolitaire PRIVATE
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::SvgWidgets
+)
 
 set_target_properties(QtSolitaire PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
@@ -71,9 +79,9 @@ endif()
 
 # Resources (Has to be after add_executable, because resources are added to QtSolitaire exe)
 set(solitaire_resource_files
-    "images/King-Hearts.png"
-    "images/Queen-Hearts.png"
-    "images/Jack-Hearts.png"
+    "images/King-Hearts.svg"
+    "images/Queen-Hearts.svg"
+    "images/Jack-Hearts.svg"
 )
 
 qt_add_resources(QtSolitaire "Images"

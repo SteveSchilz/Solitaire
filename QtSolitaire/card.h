@@ -3,7 +3,8 @@
 
 #include <QColor>
 #include <QGraphicsItem>
-#include <QPixmap>
+
+QT_FORWARD_DECLARE_CLASS(QGraphicsSvgItem)
 
 enum CardValue {
     ACE = 1,
@@ -45,7 +46,7 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
-    void setPixmap(QString path);
+    void setImage(QString path);
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
@@ -57,7 +58,7 @@ protected:
 
     QColor mColor;
     QColor mTextColor;
-    QPixmap *mImage;
+    QGraphicsSvgItem *mImage;
     CardValue mValue;
     Suite mSuite;
 };
