@@ -21,13 +21,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     qDebug() << "Hello";
-    mScene = new  myScene(-200, -200, GAME_WIDTH, GAME_HEIGHT, ui->centralwidget);
-
+    mScene = new  myScene(-GAME_WIDTH/2, -GAME_HEIGHT/2, GAME_WIDTH, GAME_HEIGHT, ui->centralwidget);
+    mScene->setSceneRect(QRectF(-GAME_WIDTH/2, -GAME_HEIGHT/2, GAME_WIDTH, GAME_HEIGHT));
     for (Suite suite: SuiteIterator() ) {
         for (CardValue value: CardValueIterator()) {
 
             Card *item = new Card(value, suite, nullptr);
-            item->setPos((double)value*30.0, (double)suite*20);
+            item->setPos(-200.0+(double)value*30.0, -200.0+(double)suite*20);
 
             mScene->addItem(item);
         }

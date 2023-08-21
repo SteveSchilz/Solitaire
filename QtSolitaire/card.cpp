@@ -12,18 +12,20 @@
 #include <QGraphicsSvgItem>
 
 
-static const int CARD_WIDTH {120};
+static const int CARD_WIDTH {60};
 static const int CARD_HEIGHT {CARD_WIDTH*5/4};
+static const int SHDW {3};  // Drop shadow offset
+
 Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
     :mValue(v)
     ,mSuite(s)
     ,mImage{nullptr}
 {
-    mColor = Qt::red;
-    mTextColor = Qt::black;
+    mColor = Qt::white;
+    mTextColor = Qt::red;
     if (mSuite == Suite::CLUB || mSuite == Suite::SPADE) {
-        mColor = Qt::black;
-        mTextColor = Qt::white;
+        mColor = Qt::white;
+        mTextColor = Qt::black;
     }
     setToolTip(QString("QColor(%1, %2, %3)\n%4")
                    .arg(mColor.red()).arg(mColor.green()).arg(mColor.blue())
@@ -37,6 +39,7 @@ Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
         mImage = new QGraphicsSvgItem(getImagePath(), this);
         mImage->setScale(0.08);
     }
+    mPaintText = QString(getText()) + QString(getSuiteChar());
 
     qDebug() << "Created Card" << this;
 }
@@ -48,29 +51,34 @@ Card::~Card() {
 
 QRectF Card::boundingRect() const
 {
-//    return QRectF(-(CARD_WIDTH/2), -(CARD_HEIGHT/2), CARD_WIDTH, CARD_HEIGHT);
-    return QRectF(-15.5, -15.5, 34, 34);
+    return QRectF(-(CARD_WIDTH/2), -(CARD_HEIGHT/2), CARD_WIDTH, CARD_HEIGHT);
+
 }
 
 void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
-    if (mImage) { //&& !mImage->isNull()) {
-        painter->scale(.08, .08);
+    painter->save();
+    if (mImage) {
+        painter->scale(.07, .07);
+        painter->translate(QPointF(-(CARD_WIDTH/(.07*2)),  -(CARD_HEIGHT/(.07*2))));
         mImage->paint(painter, option, widget);
 
     } else {
+        // Draw Drop shadow
         painter->setPen(Qt::NoPen);
         painter->setBrush(Qt::darkGray);
-        painter->drawEllipse(-15, -15, 30, 30);
+        painter->drawRect(-(CARD_WIDTH/2+SHDW), -(CARD_HEIGHT/2+SHDW), CARD_WIDTH+SHDW, CARD_HEIGHT+SHDW);
+        // Draw square
         painter->setPen(QPen(Qt::black, 1));
         painter->setBrush(QBrush(mColor));
-        painter->drawEllipse(-15, -15, 30, 30);
+        painter->drawRect(-(CARD_WIDTH/2), -(CARD_HEIGHT/2), CARD_WIDTH, CARD_HEIGHT);
+        painter->setPen(mTextColor);
+        // And the text
+        painter->drawText(QPoint{-(CARD_WIDTH/2)+SHDW, -(CARD_WIDTH/2)+SHDW}, mPaintText);
     }
-    painter->setPen(mTextColor);
-    painter->drawText(QPoint{-4, +4}, getText());
-
+    painter->restore();
 }
 
 void Card::mousePressEvent(QGraphicsSceneMouseEvent *)
@@ -94,8 +102,8 @@ void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         QImage image(":/images/King-Diamond.png");
         mime->setImageData(image);
 
-        drag->setPixmap(QPixmap::fromImage(image).scaled(30, 40));
-        drag->setHotSpot(QPoint(15, 30));
+        drag->setPixmap(QPixmap::fromImage(image).scaled(CARD_WIDTH, CARD_HEIGHT));
+        drag->setHotSpot(QPoint(CARD_WIDTH/2,CARD_HEIGHT/2));
 
     } else {
         mime->setColorData(mColor);
@@ -104,11 +112,11 @@ void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                           .arg(mColor.green(), 2, 16, QLatin1Char('0'))
                           .arg(mColor.blue(), 2, 16, QLatin1Char('0')));
 
-        QPixmap pixmap(34, 34);
+        QPixmap pixmap(CARD_WIDTH, CARD_HEIGHT);
         pixmap.fill(Qt::white);
 
         QPainter painter(&pixmap);
-        painter.translate(15, 15);
+        painter.translate(CARD_WIDTH/2, CARD_HEIGHT/2);
         painter.setRenderHint(QPainter::Antialiasing);
         paint(&painter, nullptr, nullptr);
         painter.end();
@@ -128,6 +136,17 @@ void Card::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
 {
     setCursor(Qt::OpenHandCursor);
 }
+
+QChar Card::getSuiteChar() {
+
+    switch(mSuite) {
+    case Suite::HEART: return QChar::fromUcs2(0x2665); break;
+    case Suite::DIAMOND: return QChar::fromUcs2(0x2666); break;
+    case Suite::CLUB: return QChar::fromUcs2(0x2663);
+    case Suite::SPADE: return QChar::fromUcs2(0x2660);
+    }
+}
+
 
 const char *Card::getText() {
 

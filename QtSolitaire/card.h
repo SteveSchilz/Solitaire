@@ -3,6 +3,7 @@
 
 #include "enumiterator.h"
 
+#include <QChar>
 #include <QColor>
 #include <QGraphicsItem>
 
@@ -56,13 +57,16 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
+ private:
+    QChar getSuiteChar();
     const char *getText();
     const char *getImagePath();
- private:
+
     char value;
 
     QColor mColor;
     QColor mTextColor;
+    QString mPaintText;
     QGraphicsSvgItem *mImage;
     CardValue mValue;
     Suite mSuite;
