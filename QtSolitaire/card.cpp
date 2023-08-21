@@ -143,7 +143,7 @@ void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         //pixmap.setMask(pixmap.createMaskFromColor(Qt::white, Qt::MaskOutColor));
 
         drag->setPixmap(pixmap);
-        drag->setHotSpot(QPoint(15, 20));
+        drag->setHotSpot(QPoint(CARD_WIDTH/2, CARD_HEIGHT/2));
 
     }
 
