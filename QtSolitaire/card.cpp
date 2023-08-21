@@ -1,4 +1,5 @@
 #include "card.h"
+#include "constants.h"
 
 #include <QApplication>
 #include <QCursor>
@@ -12,11 +13,6 @@
 #include <QDebug>
 #include <QGraphicsSvgItem>
 
-// Playing card aspect ratio is 3.5"/2.5" => 1.4 => Approx 14/10
-static const int CARD_WIDTH {60};
-static const int CARD_HEIGHT {CARD_WIDTH*14/10};
-static const int SHDW {3};                      // Drop shadow offset
-static const double SVG_SCALEF{0.075};            // SVG Scale Factor
 
 Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
     :mValue(v)

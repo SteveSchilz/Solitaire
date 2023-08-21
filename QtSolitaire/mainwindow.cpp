@@ -2,7 +2,8 @@
 #include "./ui_mainwindow.h"
 
 #include "card.h"
-#include "Constants.h"
+#include "cardstack.h"
+#include "constants.h"
 #include "myScene.h"
 
 #include <QGraphicsItem>
@@ -17,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , mScene(nullptr)
+    , mHearts(nullptr)
 {
     ui->setupUi(this);
 
@@ -32,6 +34,11 @@ MainWindow::MainWindow(QWidget *parent)
             mScene->addItem(item);
         }
     }
+
+    mHearts = new CardStack(nullptr);
+    mHearts->setPos(GAME_WIDTH/2, TOP_MARGIN+CARD_HEIGHT/2);
+    mHearts->setTransform(QTransform::fromScale(1.0, 1.0), true);
+    mScene->addItem(mHearts);
 
     QGraphicsView *view = new QGraphicsView{ui->centralwidget};
     if (view) {

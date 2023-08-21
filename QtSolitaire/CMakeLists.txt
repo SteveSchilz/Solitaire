@@ -20,14 +20,11 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS SvgWidgets)
 
 set(PROJECT_SOURCES
         main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
+        mainwindow.h    mainwindow.cpp    mainwindow.ui
         myscene.h
-        card.h
-        card.cpp
+        card.h          card.cpp
+        cardstack.h     cardstack.cpp
         constants.h
-
         enumiterator.h
 )
 
