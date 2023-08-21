@@ -31,6 +31,13 @@ Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
 
     setCursor(Qt::OpenHandCursor);
     setAcceptedMouseButtons(Qt::LeftButton);
+
+    const char *imgPath = getImagePath();
+    if (imgPath != nullptr) {
+        mImage = new QGraphicsSvgItem(getImagePath(), this);
+        mImage->setScale(0.08);
+    }
+
     qDebug() << "Created Card" << this;
 }
 
@@ -38,17 +45,6 @@ Card::~Card() {
     qDebug() << "Destroyed Card" << this;
 
 }
-
-void Card::setImage(QString path) {
-
-    mImage = new QGraphicsSvgItem(path, this);
-    // Note: both this and setting scaling in paint are necessary!
-    if (mImage) {
-        mImage->setScale(0.08);
-    }
-
-}
-
 
 QRectF Card::boundingRect() const
 {
@@ -149,6 +145,45 @@ const char *Card::getText() {
         case CardValue::JACK: return "J"; break;
         case CardValue::QUEEN: return "Q"; break;
         case CardValue::KING: return "K"; break;
+    }
+
+}
+
+const char *Card::getImagePath() {
+    switch (mSuite) {
+    case Suite::HEART:
+        switch(mValue) {
+        case CardValue::KING:  return ":/images/King-Hearts.svg"; break;
+        case CardValue::QUEEN: return ":/images/Queen-Hearts.svg"; break;
+        case CardValue::JACK:  return ":/images/Jack-Hearts.svg"; break;
+        default:    return nullptr;
+        }
+        break;
+
+    case Suite::DIAMOND:
+        switch(mValue) {
+        case CardValue::KING:  return ":/images/King-Diamonds.svg"; break;
+        case CardValue::QUEEN: return ":/images/Queen-Diamonds.svg"; break;
+        case CardValue::JACK:  return ":/images/Jack-Diamonds.svg"; break;
+        default:    return nullptr;
+        }
+        break;
+    case Suite::CLUB:
+        switch(mValue) {
+        case CardValue::KING:  return ":/images/King-Clubs.svg"; break;
+        case CardValue::QUEEN: return ":/images/Queen-Clubs.svg"; break;
+        case CardValue::JACK:  return ":/images/Jack-Clubs.svg"; break;
+        default:    return nullptr;
+        }
+        break;
+    case Suite::SPADE:
+        switch(mValue) {
+        case CardValue::KING:  return ":/images/King-Spades.svg"; break;
+        case CardValue::QUEEN: return ":/images/Queen-Spades.svg"; break;
+        case CardValue::JACK:  return ":/images/Jack-Spades.svg"; break;
+        default:    return nullptr;
+        }
+        break;
     }
 
 }

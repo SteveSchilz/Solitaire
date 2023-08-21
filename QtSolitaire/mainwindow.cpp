@@ -22,27 +22,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     qDebug() << "Hello";
     mScene = new  myScene(-200, -200, GAME_WIDTH, GAME_HEIGHT, ui->centralwidget);
-    CardValue value;
-    Suite suite = Suite::DIAMOND;
-    for (int i = 0; i < 13; i++) {
-        value = static_cast <CardValue>(i+1);
-        if (i >= 6) {
-            suite = Suite::CLUB;
-        }
-        Card *item = new Card(value, suite, nullptr);
-        switch(value) {
-        case CardValue::KING: item->setImage(":/images/King-Hearts.svg"); break;
-        case CardValue::QUEEN: item->setImage(":/images/Queen-Hearts.svg"); break;
-        case CardValue::JACK: item->setImage(":/images/Jack-Hearts.svg"); break;
-        default:    break;
-        }
 
-        item->setPos(::sin((value * 6.28) / 14.0) * 150,
-                     ::cos((value * 6.28) / 14.0) * 150);
+    for (Suite suite: SuiteIterator() ) {
+        for (CardValue value: CardValueIterator()) {
 
-        mScene->addItem(item);
+            Card *item = new Card(value, suite, nullptr);
+            item->setPos((double)value*30.0, (double)suite*20);
+
+            mScene->addItem(item);
+        }
     }
-
 
 //    QGraphicsView* view = ui->centralwidget->findChild<QGraphicsView*>("graphicsView");
     QGraphicsView *view = new QGraphicsView{ui->centralwidget};

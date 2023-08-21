@@ -1,12 +1,14 @@
 #ifndef CARD_H
 #define CARD_H
 
+#include "enumiterator.h"
+
 #include <QColor>
 #include <QGraphicsItem>
 
 QT_FORWARD_DECLARE_CLASS(QGraphicsSvgItem)
 
-enum CardValue {
+enum class CardValue {
     ACE = 1,
     TWO,
     THREE,
@@ -21,18 +23,21 @@ enum CardValue {
     QUEEN,
     KING
 };
+typedef enumIterator<CardValue, CardValue::ACE, CardValue::KING> CardValueIterator;
 
-enum Suite {
+enum class Suite {
     HEART,
     DIAMOND,
     SPADE,
     CLUB
 };
+typedef enumIterator<Suite, Suite::HEART, Suite::CLUB> SuiteIterator;
 
-enum Colors {
+enum class Colors {
     RED,
     BLACK
 };
+typedef enumIterator<Colors, Colors::RED, Colors::BLACK> ColorsIterator;
 
 class Card : public QGraphicsItem
 {
@@ -46,13 +51,13 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
-    void setImage(QString path);
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
     const char *getText();
+    const char *getImagePath();
  private:
     char value;
 

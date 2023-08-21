@@ -28,6 +28,7 @@ set(PROJECT_SOURCES
         card.cpp
         constants.h
 
+        enumiterator.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -82,6 +83,15 @@ set(solitaire_resource_files
     "images/King-Hearts.svg"
     "images/Queen-Hearts.svg"
     "images/Jack-Hearts.svg"
+    "images/King-Diamonds.svg"
+    "images/Queen-Diamonds.svg"
+    "images/Jack-Diamonds.svg"
+    "images/King-Spades.svg"
+    "images/Queen-Spades.svg"
+    "images/Jack-Spades.svg"
+    "images/King-Clubs.svg"
+    "images/Queen-Clubs.svg"
+    "images/Jack-Clubs.svg"
 )
 
 qt_add_resources(QtSolitaire "Images"
