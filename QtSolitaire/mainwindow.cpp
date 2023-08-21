@@ -17,8 +17,11 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , mScene(nullptr)
-    , mHearts(nullptr)
+    , mScene{nullptr}
+    , mHearts{nullptr}
+    , mDiamonds{nullptr}
+    , mClubs{nullptr}
+    , mSpades{nullptr}
 {
     ui->setupUi(this);
 
@@ -34,11 +37,18 @@ MainWindow::MainWindow(QWidget *parent)
             mScene->addItem(item);
         }
     }
-
-    mHearts = new CardStack(nullptr);
-    mHearts->setPos(GAME_WIDTH/2, TOP_MARGIN+CARD_HEIGHT/2);
-    mHearts->setTransform(QTransform::fromScale(1.0, 1.0), true);
-    mScene->addItem(mHearts);
+    for (Suite suite: SuiteIterator()) {
+        SortedStack *stack = new SortedStack(suite, nullptr);
+        stack->setPos(GAME_WIDTH/2 + (double)suite*(CARD_WIDTH+CARD_SPACING), TOP_MARGIN+CARD_HEIGHT/2);
+        stack->setTransform(QTransform::fromScale(1.0, 1.0), true);
+        mScene->addItem(stack);
+        switch(suite) {
+        case Suite::HEART: mHearts = stack; break;
+        case Suite::DIAMOND: mDiamonds = stack; break;
+        case Suite::CLUB:   mClubs = stack; break;
+        case Suite::SPADE:  mSpades = stack; break;
+        }
+    }
 
     QGraphicsView *view = new QGraphicsView{ui->centralwidget};
     if (view) {

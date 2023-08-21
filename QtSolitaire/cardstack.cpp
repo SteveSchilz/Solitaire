@@ -5,8 +5,12 @@
 #include <QCursor>
 #include <QDebug>
 #include <QGraphicsSceneDragDropEvent>
+#include <QGraphicsSvgItem>
 #include <QMimeData>
 
+/******************************************************************************
+ * CardStack Implementation
+ *****************************************************************************/
 CardStack::CardStack(QGraphicsItem *parent)
     :QGraphicsItem{parent}
     ,mColor{Qt::lightGray}
@@ -74,3 +78,61 @@ void CardStack::dropEvent(QGraphicsSceneDragDropEvent *event)
         mColor = qvariant_cast<QColor>(event->mimeData()->colorData());
     update();
 }
+
+/******************************************************************************
+ * SortedStack Implementation
+ *****************************************************************************/
+SortedStack::SortedStack(Suite s, QGraphicsItem *parent)
+    : CardStack(parent)
+    , mSuite{s}
+{
+    const char *imgPath = getImagePath(s);
+    if (imgPath != nullptr) {
+        mImage = new QGraphicsSvgItem(imgPath, this);
+        mImage->setScale(0.2);
+        mImage->setOpacity(0.4);
+        mImage->setPos(-CARD_WIDTH/4.0, -CARD_HEIGHT/4.0);
+    }
+
+}
+
+SortedStack::~SortedStack()
+{
+
+}
+
+void SortedStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+    painter->save();
+    if (mDragOver) {
+        painter->setPen(Qt::black);
+    } else  {
+        painter->setPen(Qt::lightGray);
+    }
+    painter->setBrush(Qt::NoBrush);
+
+    painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
+    painter->restore();
+}
+
+void SortedStack::dropEvent(QGraphicsSceneDragDropEvent *event)
+{
+    mDragOver = false;
+    CardStack::dropEvent(event);
+}
+
+const char *SortedStack::getImagePath(Suite s)
+{
+    switch(s) {
+    case Suite::HEART: return ":/images/Heart.svg"; break;
+    case Suite::DIAMOND: return ":/images/Diamond.svg"; break;
+    case Suite::SPADE: return ":/images/Spade.svg"; break;
+    case Suite::CLUB: return ":/images/Club.svg"; break;
+    default:    return nullptr;
+    }
+
+}
+
+

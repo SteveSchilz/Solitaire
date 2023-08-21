@@ -77,6 +77,10 @@ endif()
 
 # Resources (Has to be after add_executable, because resources are added to QtSolitaire exe)
 set(solitaire_resource_files
+    "images/Heart.svg"
+    "images/Diamond.svg"
+    "images/Club.svg"
+    "images/Spade.svg"
     "images/King-Hearts.svg"
     "images/Queen-Hearts.svg"
     "images/Jack-Hearts.svg"

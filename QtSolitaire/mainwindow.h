@@ -23,5 +23,8 @@ private:
     Ui::MainWindow *ui;
     myScene *mScene;
     CardStack *mHearts;
+    CardStack *mDiamonds;
+    CardStack *mClubs;
+    CardStack *mSpades;
 };
 #endif // MAINWINDOW_H

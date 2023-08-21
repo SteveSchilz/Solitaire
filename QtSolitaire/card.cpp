@@ -108,6 +108,9 @@ void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     drag->setMimeData(mime);
 
     static int n = 0;
+    mime->setText(mPaintText);
+    mime->setColorData(mColor);
+
     if (mImage) {
         QSvgRenderer *renderer = mImage->renderer();
 
@@ -123,11 +126,6 @@ void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         drag->setHotSpot(QPoint(CARD_WIDTH/2,CARD_HEIGHT/2));
 
     } else {
-        mime->setColorData(mColor);
-        mime->setText(QString("#%1%2%3")
-                          .arg(mColor.red(), 2, 16, QLatin1Char('0'))
-                          .arg(mColor.green(), 2, 16, QLatin1Char('0'))
-                          .arg(mColor.blue(), 2, 16, QLatin1Char('0')));
 
         QPixmap pixmap(CARD_WIDTH, CARD_HEIGHT);
         pixmap.fill(mColor);
@@ -139,7 +137,7 @@ void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         painter.end();
 
         //Creates a mask where white is non-transparent.  Interesting
-        //pixmap.setMask(pixmap.createMaskFromColor(Qt::white, Qt::MaskOutColor));
+        pixmap.setMask(pixmap.createMaskFromColor(Qt::white, Qt::MaskOutColor));
 
         drag->setPixmap(pixmap);
         drag->setHotSpot(QPoint(CARD_WIDTH/2, CARD_HEIGHT/2));
