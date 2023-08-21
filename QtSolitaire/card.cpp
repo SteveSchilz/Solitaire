@@ -70,11 +70,12 @@ void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     // Draw Drop shadow
     painter->setPen(Qt::NoPen);
     painter->setBrush(Qt::darkGray);
-    painter->drawRect(-(CARD_WIDTH/2+SHDW), -(CARD_HEIGHT/2+SHDW), CARD_WIDTH+SHDW, CARD_HEIGHT+SHDW);
+    painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
+
     // Draw square
     painter->setPen(QPen(Qt::black, 1));
     painter->setBrush(QBrush(Qt::white));
-    painter->drawRect(-(CARD_WIDTH/2), -(CARD_HEIGHT/2), CARD_WIDTH, CARD_HEIGHT);
+    painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
     if (mImage) {
         // NOTE: QGraphicsSvgItem has it's own paint method!
         //       Code below works, but performs a second paint on the image.

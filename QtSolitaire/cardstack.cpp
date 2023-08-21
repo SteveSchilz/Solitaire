@@ -48,10 +48,10 @@ void CardStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         painter->setPen(Qt::NoPen);
     }
     painter->setBrush(mColor);
-    painter->drawRect(-(CARD_WIDTH/2+SHDW), -(CARD_HEIGHT/2+SHDW), CARD_WIDTH+SHDW, CARD_HEIGHT+SHDW);
 
 //    QGraphicsRectItem::paint(painter, option, widget);
 //    painter->restore();
+    painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
 }
 
 void CardStack::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
