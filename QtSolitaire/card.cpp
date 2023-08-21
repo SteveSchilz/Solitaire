@@ -38,12 +38,16 @@ Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
     }
     mPaintText = QString(getText()) + QString(getSuiteChar());
 
-    qDebug() << "Created Card" << this;
+    if (debugLevel >= DEBUG_LEVEL::NORMAL) {
+        qDebug() << "Created Card" << this;
+    }
 }
 
 Card::~Card() {
-    qDebug() << "Destroyed Card" << this;
 
+    if (debugLevel >= DEBUG_LEVEL::NORMAL) {
+        qDebug() << "Destroyed Card" << this;
+    }
 }
 
 QRectF Card::boundingRect() const
@@ -57,11 +61,12 @@ void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     Q_UNUSED(option);
     Q_UNUSED(widget);
     painter->save();
-    if (mValue >= CardValue::JACK) {
+    if (debugLevel == DEBUG_LEVEL::VERBOSE && mValue == CardValue::JACK) {
         qDebug() << QString{"Painted Card %1 at {%2,%3}"}
                         .arg(mPaintText)
                         .arg(this->scenePos().rx()).arg(this->scenePos().ry());
     }
+
     // Draw Drop shadow
     painter->setPen(Qt::NoPen);
     painter->setBrush(Qt::darkGray);

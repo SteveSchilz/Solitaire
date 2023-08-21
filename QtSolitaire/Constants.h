@@ -13,4 +13,11 @@ static const int CARD_HEIGHT {CARD_WIDTH*14/10};
 static const int SHDW {3};                      // Drop shadow offset
 static const double SVG_SCALEF{0.075};            // SVG Scale Factor
 
+enum class DEBUG_LEVEL {
+    NONE,
+    NORMAL,
+    VERBOSE
+};
+static const DEBUG_LEVEL debugLevel{DEBUG_LEVEL::NORMAL};
+
 #endif // CONSTANTS_H

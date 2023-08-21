@@ -16,13 +16,16 @@ CardStack::CardStack(QGraphicsItem *parent)
 
     setAcceptDrops(true);
 
-    qDebug() << "Created CardStack" << this;
+    if (debugLevel >= DEBUG_LEVEL::NORMAL) {
+        qDebug() << "Created CardStack" << this;
+    }
 }
 
 CardStack::~CardStack() {
 
-    qDebug() << "Destroyed CardStack" << this;
-
+    if (debugLevel >= DEBUG_LEVEL::NORMAL) {
+        qDebug() << "Destroyed CardStack" << this;
+    }
 }
 
 QRectF CardStack::boundingRect() const
