@@ -65,7 +65,6 @@ protected:
     char value;
 
     QColor mColor;
-    QColor mTextColor;
     QString mPaintText;
     QGraphicsSvgItem *mImage;
     CardValue mValue;

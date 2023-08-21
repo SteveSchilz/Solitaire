@@ -22,12 +22,10 @@ Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
     :mValue(v)
     ,mSuite(s)
     ,mImage{nullptr}
+    ,mColor{Qt::red}
 {
-    mColor = Qt::white;
-    mTextColor = Qt::red;
     if (mSuite == Suite::CLUB || mSuite == Suite::SPADE) {
-        mColor = Qt::white;
-        mTextColor = Qt::black;
+        mColor = Qt::black;
     }
     setToolTip(QString("QColor(%1, %2, %3)\n%4")
                    .arg(mColor.red()).arg(mColor.green()).arg(mColor.blue())
@@ -74,7 +72,7 @@ void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     painter->drawRect(-(CARD_WIDTH/2+SHDW), -(CARD_HEIGHT/2+SHDW), CARD_WIDTH+SHDW, CARD_HEIGHT+SHDW);
     // Draw square
     painter->setPen(QPen(Qt::black, 1));
-    painter->setBrush(QBrush(mColor));
+    painter->setBrush(QBrush(Qt::white));
     painter->drawRect(-(CARD_WIDTH/2), -(CARD_HEIGHT/2), CARD_WIDTH, CARD_HEIGHT);
     if (mImage) {
         // NOTE: QGraphicsSvgItem has it's own paint method!
@@ -85,7 +83,7 @@ void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
         mImage->paint(painter, option, widget);
 
     } else {
-        painter->setPen(mTextColor);
+        painter->setPen(mColor);
         // And the text
         painter->drawText(QPoint{-(CARD_WIDTH/2)+SHDW+1, -(CARD_WIDTH/2)+SHDW+1}, mPaintText);
     }
@@ -131,7 +129,7 @@ void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                           .arg(mColor.blue(), 2, 16, QLatin1Char('0')));
 
         QPixmap pixmap(CARD_WIDTH, CARD_HEIGHT);
-        pixmap.fill(Qt::white);
+        pixmap.fill(mColor);
 
         QPainter painter(&pixmap);
         painter.translate(CARD_WIDTH/2, CARD_HEIGHT/2);
