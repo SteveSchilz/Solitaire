@@ -51,6 +51,7 @@ protected:
 private:
     const char *getImagePath(Suite s);
 
+    bool mDropAccepted;
     QQueue<Card> mCards;
     Suite mSuite;
     QGraphicsSvgItem *mImage;
