@@ -7,6 +7,7 @@
 #include <QMimeData>
 #include <QPainter>
 #include <QRandomGenerator>
+#include <QSvgRenderer>
 #include <QWidget>
 #include <QDebug>
 #include <QGraphicsSvgItem>
@@ -98,8 +99,15 @@ void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     drag->setMimeData(mime);
 
     static int n = 0;
-    if (n++ > 2 && QRandomGenerator::global()->bounded(3) == 0) {
-        QImage image(":/images/King-Diamond.png");
+    if (mImage) { //n++ > 2 && QRandomGenerator::global()->bounded(3) == 0) {
+        QSvgRenderer *renderer = mImage->renderer();
+
+        QImage image(CARD_WIDTH, CARD_HEIGHT, QImage::Format_ARGB32);
+        image.fill(0xaaA08080);  // partly transparent red-ish background
+
+        QPainter painter(&image);
+        renderer->render(&painter);
+
         mime->setImageData(image);
 
         drag->setPixmap(QPixmap::fromImage(image).scaled(CARD_WIDTH, CARD_HEIGHT));
@@ -121,7 +129,8 @@ void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         paint(&painter, nullptr, nullptr);
         painter.end();
 
-        pixmap.setMask(pixmap.createHeuristicMask());
+        //Creates a mask where white is non-transparent.  Interesting
+        //pixmap.setMask(pixmap.createMaskFromColor(Qt::white, Qt::MaskOutColor));
 
         drag->setPixmap(pixmap);
         drag->setHotSpot(QPoint(15, 20));

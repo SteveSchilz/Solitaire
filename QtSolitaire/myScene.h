@@ -6,7 +6,7 @@
 #include <QDebug>
 
 /*
- * Debug Class to show coordinates from scene.
+ * Debug Class to show coordinates from scene when left mouse button pressed.
  */
 class myScene: public QGraphicsScene {
 public:
@@ -18,6 +18,7 @@ public:
     }
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
         qDebug() << QString("Pos (%1,%2)").arg(event->scenePos().rx()).arg(event->scenePos().ry());
+        QGraphicsScene::mousePressEvent(event);
     }
 
 };
