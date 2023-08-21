@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
         for (CardValue value: CardValueIterator()) {
 
             Card *item = new Card(value, suite, nullptr);
-            item->setPos(-200.0+(double)value*30.0, -200.0+(double)suite*20);
+                item->setPos(30-(GAME_WIDTH/2)+(double)(value)*30.0, 100-(GAME_HEIGHT/2)+(double)suite*22);
 
             mScene->addItem(item);
         }

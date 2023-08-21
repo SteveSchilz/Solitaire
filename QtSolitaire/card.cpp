@@ -12,10 +12,11 @@
 #include <QDebug>
 #include <QGraphicsSvgItem>
 
-
+// Playing card aspect ratio is 3.5"/2.5" => 1.4 => Approx 14/10
 static const int CARD_WIDTH {60};
-static const int CARD_HEIGHT {CARD_WIDTH*5/4};
-static const int SHDW {3};  // Drop shadow offset
+static const int CARD_HEIGHT {CARD_WIDTH*14/10};
+static const int SHDW {3};                      // Drop shadow offset
+static const double SVG_SCALEF{0.075};            // SVG Scale Factor
 
 Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
     :mValue(v)
@@ -38,7 +39,8 @@ Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
     const char *imgPath = getImagePath();
     if (imgPath != nullptr) {
         mImage = new QGraphicsSvgItem(getImagePath(), this);
-        mImage->setScale(0.08);
+        mImage->setScale(SVG_SCALEF);
+        mImage->setTransformOriginPoint(QPointF(-CARD_WIDTH/2, -3-CARD_HEIGHT/2));
     }
     mPaintText = QString(getText()) + QString(getSuiteChar());
 
@@ -61,23 +63,31 @@ void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     Q_UNUSED(option);
     Q_UNUSED(widget);
     painter->save();
+    if (mValue >= CardValue::JACK) {
+        qDebug() << QString{"Painted Card %1 at {%2,%3}"}
+                        .arg(mPaintText)
+                        .arg(this->scenePos().rx()).arg(this->scenePos().ry());
+    }
+    // Draw Drop shadow
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(Qt::darkGray);
+    painter->drawRect(-(CARD_WIDTH/2+SHDW), -(CARD_HEIGHT/2+SHDW), CARD_WIDTH+SHDW, CARD_HEIGHT+SHDW);
+    // Draw square
+    painter->setPen(QPen(Qt::black, 1));
+    painter->setBrush(QBrush(mColor));
+    painter->drawRect(-(CARD_WIDTH/2), -(CARD_HEIGHT/2), CARD_WIDTH, CARD_HEIGHT);
     if (mImage) {
-        painter->scale(.07, .07);
-        painter->translate(QPointF(-(CARD_WIDTH/(.07*2)),  -(CARD_HEIGHT/(.07*2))));
+        // NOTE: QGraphicsSvgItem has it's own paint method!
+        //       Code below works, but performs a second paint on the image.
+        //       We don't need to do anything here...
+        painter->scale(SVG_SCALEF, SVG_SCALEF);
+        painter->translate(QPointF(-(CARD_WIDTH/(SVG_SCALEF*2)),  -(CARD_HEIGHT/(SVG_SCALEF*2))));
         mImage->paint(painter, option, widget);
 
     } else {
-        // Draw Drop shadow
-        painter->setPen(Qt::NoPen);
-        painter->setBrush(Qt::darkGray);
-        painter->drawRect(-(CARD_WIDTH/2+SHDW), -(CARD_HEIGHT/2+SHDW), CARD_WIDTH+SHDW, CARD_HEIGHT+SHDW);
-        // Draw square
-        painter->setPen(QPen(Qt::black, 1));
-        painter->setBrush(QBrush(mColor));
-        painter->drawRect(-(CARD_WIDTH/2), -(CARD_HEIGHT/2), CARD_WIDTH, CARD_HEIGHT);
         painter->setPen(mTextColor);
         // And the text
-        painter->drawText(QPoint{-(CARD_WIDTH/2)+SHDW, -(CARD_WIDTH/2)+SHDW}, mPaintText);
+        painter->drawText(QPoint{-(CARD_WIDTH/2)+SHDW+1, -(CARD_WIDTH/2)+SHDW+1}, mPaintText);
     }
     painter->restore();
 }
@@ -99,7 +109,7 @@ void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     drag->setMimeData(mime);
 
     static int n = 0;
-    if (mImage) { //n++ > 2 && QRandomGenerator::global()->bounded(3) == 0) {
+    if (mImage) {
         QSvgRenderer *renderer = mImage->renderer();
 
         QImage image(CARD_WIDTH, CARD_HEIGHT, QImage::Format_ARGB32);
