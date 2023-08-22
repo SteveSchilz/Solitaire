@@ -12,7 +12,7 @@ static const int CARD_WIDTH {60};
 static const int CARD_HEIGHT {CARD_WIDTH*14/10};
 static const int SHDW {3};                      // Drop shadow offset
 
-static const double SVG_SCALEF{0.075};            // SVG Scale Factor
+static const double SVG_SCALEF{0.078};            // SVG Scale Factor
 static const double CARD_RADIUS{CARD_WIDTH/10.0};
 
 static const char CARD_MIME_TYPE[] {"application/x-card"};

@@ -67,15 +67,6 @@ void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
                         .arg(this->scenePos().rx()).arg(this->scenePos().ry());
     }
 
-    // Draw Drop shadow
-    painter->setPen(Qt::NoPen);
-    painter->setBrush(Qt::darkGray);
-    painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
-
-    // Draw square
-    painter->setPen(QPen(Qt::black, 1));
-    painter->setBrush(QBrush(Qt::white));
-    painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
     if (mImage) {
         // NOTE: QGraphicsSvgItem has it's own paint method!
         //       Code below works, but performs a second paint on the image.
@@ -85,8 +76,18 @@ void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
         mImage->paint(painter, option, widget);
 
     } else {
-        painter->setPen(mColor);
+        // Draw Drop shadow
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(Qt::darkGray);
+        painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
+
+        // Draw square
+        painter->setPen(QPen(Qt::black, 1));
+        painter->setBrush(QBrush(Qt::white));
+        painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
+
         // And the text
+        painter->setPen(mColor);
         painter->drawText(QPoint{-(CARD_WIDTH/2)+SHDW+1, -(CARD_WIDTH/2)+SHDW+1}, mPaintText);
     }
     painter->restore();
