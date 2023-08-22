@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210.55727mm"
+   height="306.55206mm"
+   viewBox="0 0 210.55727 306.55206"
+   version="1.1"
+   id="svg1"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm" />
+  <defs
+     id="defs1">
+    <mask
+       id="mask-50">
+      <g
+         filter="url(#filter-remove-color)"
+         id="g101">
+        <rect
+           x="-281.70001"
+           y="-213.136"
+           width="3380.3999"
+           height="2557.6321"
+           fill="#000000"
+           fill-opacity="0.259995"
+           id="rect101" />
+      </g>
+    </mask>
+    <filter
+       id="filter-remove-color"
+       x="0"
+       y="0"
+       width="1"
+       height="1">
+      <feColorMatrix
+         color-interpolation-filters="sRGB"
+         values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
+         id="feColorMatrix1" />
+    </filter>
+    <clipPath
+       id="clip-101">
+      <rect
+         x="0"
+         y="0"
+         width="155"
+         height="224"
+         id="rect102" />
+    </clipPath>
+    <clipPath
+       id="clip-100">
+      <path
+         clip-rule="nonzero"
+         d="M 0.679688,0.0703125 H 154.21875 V 223.78906 H 0.679688 Z m 0,0"
+         id="path101" />
+    </clipPath>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(1.7043359e-5)">
+    <g
+       id="g2"
+       transform="matrix(1.3333333,0,0,1.3333333,-3348.401,-529.16665)">
+      <g
+         mask="url(#mask-50)"
+         id="g980">
+        <g
+           id="use980"
+           clip-path="url(#clip-101)"
+           transform="translate(2515,403)">
+          <g
+             clip-path="url(#clip-100)"
+             id="g4">
+            <path
+               fill-rule="nonzero"
+               fill="#0c0101"
+               fill-opacity="1"
+               d="M 145.50781,223.78906 H 9.386719 c -4.8125,0 -8.710938,-3.90234 -8.710938,-8.71094 V 8.78125 c 0,-4.8125 3.898438,-8.7109375 8.710938,-8.7109375 H 145.50781 c 4.8086,0 8.71094,3.8984375 8.71094,8.7109375 v 206.29687 c 0,4.8086 -3.90234,8.71094 -8.71094,8.71094"
+               id="path2" />
+          </g>
+        </g>
+      </g>
+      <path
+         fill-rule="nonzero"
+         fill="#dddddd"
+         fill-opacity="1"
+         d="m 2664.8398,403.49219 v 213.60156 c 0,3.67187 -2.9687,6.61719 -6.6171,6.61719 h -140.3086 c -3.668,0 -6.6133,-2.94532 -6.6133,-6.61719 V 403.49219 c 0,-3.64844 2.9453,-6.61719 6.6133,-6.61719 h 140.3086 c 3.6484,0 6.6171,2.96875 6.6171,6.61719"
+         id="path981" />
+      <path
+         fill-rule="nonzero"
+         fill="#c7c8c9"
+         fill-opacity="1"
+         d="M 2664.8398,420.08594 V 601.3125 l -15.039,22.39844 h -124.668 l -13.832,-20.59766 V 418.28125 l 14.3711,-21.40625 h 123.5898 z m 0,0"
+         id="path982" />
+      <path
+         fill-rule="nonzero"
+         fill="#dddddd"
+         fill-opacity="1"
+         d="m 2664.8398,457.72656 v 105.94141 l -40.3203,60.04297 h -74.125 l -39.0937,-58.21875 V 455.90234 l 39.6328,-59.02734 h 73.0469 z m 0,0"
+         id="path983" />
+      <path
+         fill-rule="nonzero"
+         fill="#c7c8c9"
+         fill-opacity="1"
+         d="m 2664.8398,494.85156 v 31.69141 l -65.25,97.16797 h -24.2656 l -64.0234,-95.36328 v -35.30079 l 64.5625,-96.17187 h 23.1875 z m 0,0"
+         id="path984" />
+      <path
+         fill-rule="nonzero"
+         fill="#dddddd"
+         fill-opacity="1"
+         d="m 2587.4688,417.37109 -62.6641,93.32422 62.6641,93.32422 62.6601,-93.32422 z m 0,0"
+         id="path985" />
+      <path
+         fill-rule="nonzero"
+         fill="#c7c8c9"
+         fill-opacity="1"
+         d="m 2587.4688,454.51953 -37.7227,56.17578 37.7227,56.17578 37.7187,-56.17578 z m 0,0"
+         id="path986" />
+      <path
+         fill-rule="nonzero"
+         fill="#dddddd"
+         fill-opacity="1"
+         d="m 2587.4688,492.38672 -12.2969,18.30859 12.2969,18.3086 12.289,-18.3086 z m 0,0"
+         id="path987" />
+    </g>
+  </g>
+</svg>

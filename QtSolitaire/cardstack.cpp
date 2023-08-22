@@ -162,3 +162,48 @@ const char *SortedStack::getImagePath(Suite s)
 }
 
 
+/******************************************************************************
+ * RandomStack Implementation
+ *****************************************************************************/
+RandomStack::RandomStack(QGraphicsItem *parent)
+    : CardStack(parent)
+    , mDropAccepted(false)
+{
+    const char *imgPath = getImagePath();
+    if (imgPath != nullptr) {
+        mImage = new QGraphicsSvgItem(imgPath, this);
+        mImage->setScale(SVG_SCALEF);
+        mImage->setOpacity(0.4);
+        mImage->setPos(-CARD_WIDTH/2.0, -CARD_HEIGHT/2.0);
+    }
+
+}
+
+RandomStack::~RandomStack()
+{
+
+}
+
+void RandomStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+    painter->save();
+    if (mDragOver) {
+        painter->setPen(Qt::black);
+    } else  {
+        painter->setPen(Qt::lightGray);
+    }
+    if (!mDropAccepted) {
+        painter->setBrush(Qt::NoBrush);
+        painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
+    } else {
+        CardStack::paint(painter, option, widget);
+    }
+    painter->restore();
+}
+
+const char *RandomStack::getImagePath()
+{
+    return ":/images/Card-Back.svg";
+}

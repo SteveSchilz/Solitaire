@@ -18,6 +18,9 @@ protected:
 
 private:
     myScene *mScene;
+    CardStack *mHand;
+    CardStack *mWastePile;
+
     CardStack *mHearts;
     CardStack *mDiamonds;
     CardStack *mClubs;

@@ -1,11 +1,24 @@
 Qt Solitaire
 
-W
+Opening Vector Art:
+    Inkscape -> open file -> vectorstock_38016577.ai -> Cairo Import_
 
 # Date: 
 
 
-# Date  08/20/23  
+# Date  08/22/23   4.0 hrs Github, Readme, Game Object, RandomStack Object
+  * Put project on GitHub (private, for now)
+  * Add initial readme
+   * Move instantiation of graphics view objects from mainWindow to new "Game" object
+  * Stub in "RandomStack" object to be used for hand and waste pile 
+  * Looked up some terminology here
+  * [semicolon.com:Solitaire/Rules/Glossary](https://www.semicolon.com/Solitaire/Rules/Glossary.html)
+  * [cards.fandom.com-Solitaire_terminology](https://cards.fandom.com/wiki/Solitaire_terminology)
+  * Spent a bit of time reading about Deployment
+    * [Qt For MacOS - Deployment](https://doc.qt.io/qt-6/macos-deployment.html)
+    * Licensing See [Stack Overflow] Does App Store accept Qt Linkede App LGPLv3](https://stackoverflow.com/questions/35068054/does-app-store-accept-qt-app-linked-with-qt-library-lgplv3)
+    * Technical: App Store see [Uploading a Python App to the Mac App Store(October 22](https://github.com/nyavramov/python_app_mac_app_store)
+    * [Notes on Apple Developer Forum]()
  
 # Date: 08/20/23   5.0 hrs Switched to SVG Renderer from QPixmap. 
   * **SVG Images** Found two sets of cards on [VectorStock]

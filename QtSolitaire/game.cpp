@@ -10,6 +10,8 @@
 Game::Game(QWidget* parent)
     : QGraphicsView{parent}
     , mScene{nullptr}
+    , mHand{nullptr}
+    , mWastePile{nullptr}
     , mHearts{nullptr}
     , mDiamonds{nullptr}
     , mClubs{nullptr}
@@ -29,6 +31,14 @@ Game::Game(QWidget* parent)
             mScene->addItem(item);
         }
     }
+
+    mHand = new RandomStack(nullptr);
+    mHand->setPos(CARD_SPACING+CARD_WIDTH/2, TOP_MARGIN+CARD_HEIGHT/2);
+    mScene->addItem(mHand);
+
+    mWastePile = new RandomStack(nullptr);
+    mWastePile->setPos(2*CARD_SPACING+ 3*CARD_WIDTH/2, TOP_MARGIN+CARD_HEIGHT/2);
+    mScene->addItem(mWastePile);
 
     // Create Sorted Stacks to drop cards into to win (Ace -> King, only one suite)
     for (Suite suite: SuiteIterator()) {

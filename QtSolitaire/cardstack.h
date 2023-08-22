@@ -29,6 +29,7 @@ protected:
     QColor mColor = Qt::lightGray;
     bool mDragOver = false;
 };
+
 /*!
  * @class SortedStack
  * @brief The SortedStack class is used for the final destination for cards
@@ -54,6 +55,30 @@ private:
     bool mDropAccepted;
     QStack<Card*> mCards;
     Suite mSuite;
+    QGraphicsSvgItem *mImage;
+};
+
+
+/*!
+ * @class RandomStack
+ * @brief The RandomStack class is used for the shuffled "hand" stack and the associated "wastepile"
+ * There are no special rules for these cards
+ */
+class RandomStack: public CardStack {
+public:
+    RandomStack() = delete;
+    RandomStack(QGraphicsItem *parent = nullptr);
+    ~RandomStack();
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
+
+protected:
+
+private:
+    const char *getImagePath();
+
+    bool mDropAccepted;
+    QList<Card*> mCards;
     QGraphicsSvgItem *mImage;
 
 };
