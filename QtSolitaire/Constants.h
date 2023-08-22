@@ -15,6 +15,8 @@ static const int SHDW {3};                      // Drop shadow offset
 static const double SVG_SCALEF{0.075};            // SVG Scale Factor
 static const double CARD_RADIUS{CARD_WIDTH/10.0};
 
+static const char CARD_MIME_TYPE[] {"application/x-card"};
+
 enum class DEBUG_LEVEL {
     NONE,
     NORMAL,

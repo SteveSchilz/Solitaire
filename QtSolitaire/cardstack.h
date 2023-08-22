@@ -5,7 +5,7 @@
 
 #include <QObject>
 #include <QGraphicsItem>
-#include <QQueue>
+#include <QStack>
 
 QT_FORWARD_DECLARE_CLASS(QGraphicsSvgItem)
 
@@ -52,7 +52,7 @@ private:
     const char *getImagePath(Suite s);
 
     bool mDropAccepted;
-    QQueue<Card> mCards;
+    QStack<Card*> mCards;
     Suite mSuite;
     QGraphicsSvgItem *mImage;
 

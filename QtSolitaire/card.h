@@ -49,6 +49,10 @@ public:
     Card(CardValue v, Suite s, QGraphicsItem *parent = nullptr);
     ~Card();
 
+    Suite getSuite() const { return mSuite; }
+    QColor getColor() const { return mColor; }
+    CardValue getValue() const { return mValue; }
+
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
@@ -70,5 +74,8 @@ protected:
     CardValue mValue;
     Suite mSuite;
 };
+
+QDataStream & operator << (QDataStream & s, const Card *cardptr);
+QDataStream & operator >> (QDataStream & s, Card *& cardptr);
 
 #endif // CARD_H

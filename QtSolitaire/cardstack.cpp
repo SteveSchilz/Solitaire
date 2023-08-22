@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QGraphicsSceneDragDropEvent>
 #include <QGraphicsSvgItem>
+#include <QIoDevice>
 #include <QMimeData>
 
 /******************************************************************************
@@ -41,15 +42,15 @@ void CardStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
-//    painter->save();
+    painter->save();
     if (mDragOver) {
         painter->setPen(Qt::black);
     } else  {
         painter->setPen(Qt::NoPen);
     }
     painter->setBrush(mColor);
-//    painter->restore();
     painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
+    painter->restore();
 }
 
 void CardStack::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
@@ -121,10 +122,31 @@ void SortedStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
 void SortedStack::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
+    Card *droppedCard{nullptr};
+
     mDragOver = false;
-    CardStack::dropEvent(event);
-    mDropAccepted = true;
-    mImage->setVisible(false);
+
+    if(event->mimeData()->hasFormat(CARD_MIME_TYPE)) {
+        QByteArray itemData = event->mimeData()->data("application/x-card");
+        QDataStream dataStream(&itemData, QIODevice::ReadOnly);
+
+        dataStream >> droppedCard;
+        // TODO: ugly casting to get next value of class enum!
+        CardValue testValue = mCards.size() == 0 ? CardValue::ACE : static_cast<CardValue>((int)mCards.top()->getValue() +1);
+        if (droppedCard && droppedCard->getSuite() == mSuite) {
+            if((droppedCard->getValue() == testValue) ||
+                testValue == droppedCard->getValue()) {
+                mDropAccepted = true;
+                mImage->setVisible(false);
+                droppedCard->setPos(QPoint(0,0));
+
+                droppedCard->setParentItem(this);
+                mCards.push(droppedCard);
+            }
+        }
+    } else {
+        event->setAccepted(false);
+    }
 }
 
 const char *SortedStack::getImagePath(Suite s)

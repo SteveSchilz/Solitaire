@@ -112,6 +112,13 @@ void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     mime->setText(mPaintText);
     mime->setColorData(mColor);
 
+    // Serialize a pointer to the card into the mime data
+    QByteArray itemData;
+    QDataStream dataStream{&itemData, QIODevice::WriteOnly};
+    dataStream << this;
+
+    mime->setData(CARD_MIME_TYPE, itemData);
+
     if (mImage) {
         QSvgRenderer *renderer = mImage->renderer();
 
@@ -222,4 +229,18 @@ const char *Card::getImagePath() {
         break;
     }
 
+}
+
+QDataStream & operator << (QDataStream & s, const Card *cardptr)
+{
+    /** WARNING: non-portable code **/
+    qulonglong ptrval(*reinterpret_cast<qulonglong *>(&cardptr));
+    return s << ptrval;
+}
+QDataStream & operator >> (QDataStream & s, Card *& cardptr)
+{
+    qulonglong ptrval;
+    s >> ptrval;
+    cardptr = *reinterpret_cast<Card **>(&ptrval);
+    return s;
 }

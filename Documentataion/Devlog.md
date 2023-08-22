@@ -1,10 +1,13 @@
 Qt Solitaire
 
+W
 
 # Date: 
 
 
-# Date: 08/20/23    Switched to SVG Renderer from QPixmap. 
+# Date  08/20/23  
+ 
+# Date: 08/20/23   5.0 hrs Switched to SVG Renderer from QPixmap. 
   * **SVG Images** Found two sets of cards on [VectorStock]
     * [Fantasy Deck](https://www.vectorstock.com/royalty-free-vector/set-playing-cards-printable-poker-game-kit-vector-38016577)
     * [Template Deck](https://www.vectorstock.com/royalty-free-vector/playing-cards-set-template-printable-empty-vector-37595976)
