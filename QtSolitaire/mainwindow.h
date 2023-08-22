@@ -6,10 +6,7 @@
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
-
-// Forward Declarations
-class CardStack;
-class myScene;
+QT_FORWARD_DECLARE_CLASS(Game)
 
 class MainWindow : public QMainWindow
 {
@@ -21,10 +18,6 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    myScene *mScene;
-    CardStack *mHearts;
-    CardStack *mDiamonds;
-    CardStack *mClubs;
-    CardStack *mSpades;
+    Game *mGame;
 };
 #endif // MAINWINDOW_H

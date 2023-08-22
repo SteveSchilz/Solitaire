@@ -11,4 +11,4 @@ This is an implementation of Klondike Solitaire using the Qt GraphicsView Framew
  
 # Specifications 
 
-See [Documentation/SolitaireSpecifications.md]
+See [Documentation/SolitaireSpecification.md]

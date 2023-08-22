@@ -26,6 +26,7 @@ set(PROJECT_SOURCES
         cardstack.h     cardstack.cpp
         constants.h
         enumiterator.h
+        game.h         game.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
