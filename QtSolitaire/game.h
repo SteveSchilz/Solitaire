@@ -22,6 +22,9 @@ protected:
 
 private slots:
     void onCardClicked(Card& card);
+    void onShuffleClicked();
+    void onDealClicked();
+    void onExitClicked();
 
 private:
     myScene *mScene;

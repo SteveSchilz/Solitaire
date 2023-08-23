@@ -18,12 +18,14 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS SvgWidgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS SvgWidgets)
 
+
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.h    mainwindow.cpp    mainwindow.ui
         myscene.h
         card.h          card.cpp
         cardstack.h     cardstack.cpp
+        clickableitem.h clickableitem.cpp
         constants.h
         deck.h          deck.cpp
         enumiterator.h

@@ -2,13 +2,17 @@
 
 #include "card.h"
 #include "cardstack.h"
+#include "clickableitem.h"
 #include "constants.h"
 #include "deck.h"
 #include "myScene.h"
 
+#include <QApplication>
 #include <QDebug>
 #include <QGraphicsView>
-const bool showDeck{true};
+#include <QMessageBox>
+
+const bool showDeck{true};  //< Debug flag to show initial state of deck.
 
 Game::Game(QWidget* parent)
     : QGraphicsView{parent}
@@ -64,6 +68,35 @@ Game::Game(QWidget* parent)
         }
     }
 
+    // Create clickable links along the bottom
+    qreal textWidth = 0;
+    for(int i = 0; i < 3; i++) {
+        ClickableGraphicsTextItem* item = new ClickableGraphicsTextItem(nullptr);
+        switch (i) {
+        case 0:
+            item->setPlainText(QString("Shuffle"));
+            QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onShuffleClicked);
+            break;
+        case 1:
+            item->setPlainText(QString{"Deal"});
+            QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onDealClicked);
+            break;
+        case 2:
+            item->setPlainText(QString{"Exit"});
+            QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onExitClicked);
+            break;
+        default:
+            break;
+        }
+        item->adjustSize();
+        item->setPos(2*GAME_WIDTH/10+textWidth, GAME_HEIGHT-CARD_HEIGHT);
+        textWidth += item->textWidth() + CARD_SPACING;
+        item->setDefaultTextColor(Qt::white);
+        item->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
+        item->setTextInteractionFlags(Qt::LinksAccessibleByMouse | Qt::LinksAccessibleByKeyboard);
+        mScene->addItem(item);
+    }
+
     this->setScene(mScene);
 }
 
@@ -78,4 +111,40 @@ void Game::showEvent(QShowEvent *event)
 void Game::onCardClicked(Card& card)
 {
     qDebug() << "Clicked" << card.getText();
+}
+
+void Game::onShuffleClicked()
+{
+    qDebug() << __func__;
+}
+
+void Game::onDealClicked()
+{
+    qDebug() << __func__;
+}
+
+void Game::onExitClicked()
+{
+    qDebug() << __func__;
+
+    // https://doc.qt.io/qt-6/qmessagebox.html
+    QMessageBox* msgBox = new QMessageBox(this);
+    msgBox->setWindowTitle(tr("Exit Solitaire"));
+    msgBox->setText(tr("Exit Program?"));
+    msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox->setDefaultButton(QMessageBox::Save);
+
+    // Exec returns a QStandardButton value, note that pressing Esc returns "No"
+    int ret = msgBox->exec();
+    switch (ret) {
+    case QMessageBox::Yes:
+        QApplication::exit(0);
+        break;
+    case QMessageBox::No:
+        qDebug() << "Exit Canceled";
+        break;
+    default:
+        // should never be reached
+        break;
+    }
 }
