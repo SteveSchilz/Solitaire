@@ -5,6 +5,7 @@
 
 // Forward Declarations
 class CardStack;
+class Deck;
 class myScene;
 
 class Game : public QGraphicsView
@@ -18,6 +19,7 @@ protected:
 
 private:
     myScene *mScene;
+    Deck *mDeck;
     CardStack *mHand;
     CardStack *mWastePile;
 

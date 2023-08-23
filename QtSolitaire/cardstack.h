@@ -67,14 +67,17 @@ private:
 class RandomStack: public CardStack {
 public:
     RandomStack() = delete;
+    RandomStack(RandomStack&) = delete;
+
     RandomStack(QGraphicsItem *parent = nullptr);
     ~RandomStack();
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
+    void addCard(Card& card);
+
 protected:
 
-private:
     const char *getImagePath();
 
     bool mDropAccepted;

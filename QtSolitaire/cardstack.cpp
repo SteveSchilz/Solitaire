@@ -203,6 +203,14 @@ void RandomStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->restore();
 }
 
+void RandomStack::addCard(Card& card)
+{
+    mCards.append(&card);
+    card.setParentItem(this);
+    card.setPos(0,0);
+}
+
+
 const char *RandomStack::getImagePath()
 {
     return ":/images/Card-Back.svg";

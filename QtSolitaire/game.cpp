@@ -3,13 +3,16 @@
 #include "card.h"
 #include "cardstack.h"
 #include "constants.h"
+#include "deck.h"
 #include "myScene.h"
 
 #include <QGraphicsView>
+const bool showDeck{true};
 
 Game::Game(QWidget* parent)
     : QGraphicsView{parent}
     , mScene{nullptr}
+    , mDeck{nullptr}
     , mHand{nullptr}
     , mWastePile{nullptr}
     , mHearts{nullptr}
@@ -21,6 +24,10 @@ Game::Game(QWidget* parent)
     mScene = new  myScene(0, 0, GAME_WIDTH, GAME_HEIGHT, parent);
     mScene->setSceneRect(QRectF(0, 0, GAME_WIDTH, GAME_HEIGHT));
 
+    mDeck = new Deck(showDeck, nullptr);
+    mDeck->setPos(CARD_SPACING+CARD_WIDTH/2, GAME_HEIGHT/2);
+    mScene->addItem(mDeck);
+
     // Create our cards
     for (Suite suite: SuiteIterator() ) {
         for (CardValue value: CardValueIterator()) {
@@ -29,6 +36,7 @@ Game::Game(QWidget* parent)
             item->setPos(30+(double)(value)*30.0, 3*CARD_HEIGHT/2+2*TOP_MARGIN+(double)suite*22);
 
             mScene->addItem(item);
+            mDeck->addCard(*item);
         }
     }
 

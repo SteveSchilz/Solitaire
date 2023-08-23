@@ -25,6 +25,7 @@ set(PROJECT_SOURCES
         card.h          card.cpp
         cardstack.h     cardstack.cpp
         constants.h
+        deck.h          deck.cpp
         enumiterator.h
         game.h         game.cpp
 )
