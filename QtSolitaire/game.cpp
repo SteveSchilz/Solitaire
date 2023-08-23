@@ -116,6 +116,7 @@ void Game::onCardClicked(Card& card)
 void Game::onShuffleClicked()
 {
     qDebug() << __func__;
+    mDeck->shuffle();
 }
 
 void Game::onDealClicked()

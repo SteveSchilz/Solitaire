@@ -3,6 +3,9 @@
 
 #include <QPainter>
 
+#include <algorithm>
+#include <random>
+
 Deck::Deck(bool showDeck, QGraphicsItem *parent)
     :RandomStack(parent)
     ,mShowDeck(showDeck)
@@ -42,7 +45,9 @@ void Deck::addCard(Card& card)
 
 void Deck::shuffle()
 {
-
+    std::random_device rd;
+    std:std::mt19937 rng(rd());
+    std::shuffle(mCards.begin(), mCards.end(), rng);
 }
 
 Card* Deck::deal()
