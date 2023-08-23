@@ -6,6 +6,7 @@
 #include "deck.h"
 #include "myScene.h"
 
+#include <QDebug>
 #include <QGraphicsView>
 const bool showDeck{true};
 
@@ -35,6 +36,7 @@ Game::Game(QWidget* parent)
             Card *item = new Card(value, suite, nullptr);
             item->setPos(30+(double)(value)*30.0, 3*CARD_HEIGHT/2+2*TOP_MARGIN+(double)suite*22);
 
+            bool result = QObject::connect(item, &Card::clicked, this, &Game::onCardClicked);
             mScene->addItem(item);
             mDeck->addCard(*item);
         }
@@ -71,4 +73,9 @@ void Game::showEvent(QShowEvent *event)
     this->setRenderHint(QPainter::Antialiasing);
     this->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     this->setBackgroundBrush(QColor(22, 161, 39));      // A medium dark green
+}
+
+void Game::onCardClicked(Card& card)
+{
+    qDebug() << "Clicked" << card.getText();
 }

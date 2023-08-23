@@ -15,7 +15,9 @@
 
 
 Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
-    :mValue(v)
+    :QGraphicsItem(parent)
+    ,mMouseDown(false)
+    ,mValue(v)
     ,mSuite(s)
     ,mImage{nullptr}
     ,mColor{Qt::red}
@@ -36,17 +38,19 @@ Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
         mImage->setScale(SVG_SCALEF);
         mImage->setTransformOriginPoint(QPointF(-CARD_WIDTH/2, -3-CARD_HEIGHT/2));
     }
-    mPaintText = QString(getText()) + QString(getSuiteChar());
+    mPaintText = QString(getValueText()) + QString(getSuiteChar());
 
+    // Hacky debug level, static cast became necessary when we added signal to this
+    // class, making the "this" pointer ambigous without it.
     if (debugLevel >= DEBUG_LEVEL::NORMAL) {
-        qDebug() << "Created Card" << this;
+        qDebug() << "Created Card" <<  static_cast<QGraphicsItem*>(this);
     }
 }
 
 Card::~Card() {
 
     if (debugLevel >= DEBUG_LEVEL::NORMAL) {
-        qDebug() << "Destroyed Card" << this;
+        qDebug() << "Destroyed Card" << static_cast<QGraphicsItem*>(this);
     }
 }
 
@@ -93,13 +97,28 @@ void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     painter->restore();
 }
 
-void Card::mousePressEvent(QGraphicsSceneMouseEvent *)
+// Signal definitions appear in the moc output, no need to define them.
+// void Card::clicked(Card& card) { }
+
+void Card::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    setCursor(Qt::ClosedHandCursor);
+// Docs say default impl handles selection and moving...
+//    QGraphicsItem::mousePressEvent(event);
+    if (event->button() == Qt::LeftButton)
+    {
+        mMouseDown = true;
+        event->accept();
+        setCursor(Qt::ClosedHandCursor);
+    }
+    else
+    {
+        event->ignore();
+    }
 }
 
 void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
+    QGraphicsItem::mouseMoveEvent(event);
     if (QLineF(event->screenPos(), event->buttonDownScreenPos(Qt::LeftButton))
             .length() < QApplication::startDragDistance()) {
         return;
@@ -153,13 +172,25 @@ void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
     }
 
-    drag->exec();
+    drag->exec(Qt::MoveAction);
     setCursor(Qt::OpenHandCursor);
 }
 
-void Card::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
+void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
+    mMouseDown = false;
+    QGraphicsItem::hoverLeaveEvent(event);
+}
+
+
+void Card::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (mMouseDown) {
+        mMouseDown = false;
+        emit clicked(*this);
+    }
     setCursor(Qt::OpenHandCursor);
+    QGraphicsItem::mouseReleaseEvent(event);
 }
 
 QChar Card::getSuiteChar() {
@@ -173,7 +204,7 @@ QChar Card::getSuiteChar() {
 }
 
 
-const char *Card::getText() {
+const char *Card::getValueText() {
 
     switch(mValue) {
         case CardValue::ACE: return "A"; break;
@@ -245,3 +276,4 @@ QDataStream & operator >> (QDataStream & s, Card *& cardptr)
     cardptr = *reinterpret_cast<Card **>(&ptrval);
     return s;
 }
+

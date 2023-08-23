@@ -40,10 +40,11 @@ enum class Colors {
 };
 typedef enumIterator<Colors, Colors::RED, Colors::BLACK> ColorsIterator;
 
-class Card : public QGraphicsItem
+class Card : public QObject, public QGraphicsItem
 {
-public:
+    Q_OBJECT
     Q_DISABLE_COPY(Card)
+public:
 
     Card() = delete;
     Card(CardValue v, Suite s, QGraphicsItem *parent = nullptr);
@@ -52,22 +53,27 @@ public:
     Suite getSuite() const { return mSuite; }
     QColor getColor() const { return mColor; }
     CardValue getValue() const { return mValue; }
+    const QString& getText() const { return mPaintText; }
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
+signals:
+    void clicked(Card& card);
+
 protected:
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
+
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
  private:
     QChar getSuiteChar();
-    const char *getText();
+    const char *getValueText();
     const char *getImagePath();
 
-    char value;
-
+    bool mMouseDown;
     QColor mColor;
     QString mPaintText;
     QGraphicsSvgItem *mImage;

@@ -1,6 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "card.h"
+
 #include <QGraphicsView>
 
 // Forward Declarations
@@ -10,12 +12,16 @@ class myScene;
 
 class Game : public QGraphicsView
 {
+    Q_OBJECT
 public:
     Game() = delete;
     Game(QWidget* parent);
 
 protected:
     void showEvent(QShowEvent *event) override;
+
+private slots:
+    void onCardClicked(Card& card);
 
 private:
     myScene *mScene;
