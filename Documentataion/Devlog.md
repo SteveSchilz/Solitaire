@@ -5,7 +5,13 @@ Opening Vector Art:
 
 # Date: 
 
-
+# Date  08/22/23   6.0 hrs Stub in Deck, Add CardClick, add ClickableTextItem
+  * Add Deck object with shuffle and deal methods
+  * Add Card::click() signal, connected to Game::onCardClicked()
+  * Add ClickableGraphicsTextItem, create three clickable items on bottom of screen 
+  
+  
+    
 # Date  08/22/23   4.0 hrs Github, Readme, Game Object, RandomStack Object
   * Put project on GitHub (private, for now)
   * Add initial readme

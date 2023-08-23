@@ -142,7 +142,10 @@ void SortedStack::dropEvent(QGraphicsSceneDragDropEvent *event)
 
                 droppedCard->setParentItem(this);
                 mCards.push(droppedCard);
+                update();
             }
+        } else {
+            event->setAccepted(false);
         }
     } else {
         event->setAccepted(false);
