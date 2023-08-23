@@ -15,7 +15,7 @@
 
 
 Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
-    :QGraphicsItem(parent)
+    :QGraphicsObject(parent)
     ,mMouseDown(false)
     ,mValue(v)
     ,mSuite(s)

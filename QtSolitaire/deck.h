@@ -9,7 +9,7 @@
  * @brief The Deck class is an adaption of RandomStack used to temporarily hold the cards when shuffling the deck and dealing.
  *
  */
-class Deck : public QObject, public RandomStack
+class Deck : public RandomStack
 {
     Q_OBJECT
 public:

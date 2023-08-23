@@ -8,12 +8,51 @@
 #include <QGraphicsSvgItem>
 #include <QIoDevice>
 #include <QMimeData>
+#include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
+
+const int FAN_DURATION_MS{750};             ///< Time in ms for Card Fanning animation to run
+
+/**
+ * @brief getFanLocation calculates x/y values for a stack of cards that is fanned out across the table
+ *
+ * @param i index of card in stack
+ * @param n number of cards to be fanned out
+ * @param f FanDirection (Horizontal, Vertical, Other?)
+ * @param fanRegion - the area to fan the cards across in pixels is specified by a Qrect: which is two points(topLeft, bottom right)
+ *
+ * @return Point in scene coordinates for the specified card
+ */
+QPointF getFanLocation(int i, int n, FanDirection f, QRect fanRegion ) {
+    double x{0.0}, y{0.0};
+
+    // Todo: Testing: check right >= left, bottom >= top (same acceptable)
+    int xDistance = (fanRegion.right() - fanRegion.left())/n;
+    int yDistance = (fanRegion.bottom() - fanRegion.top())/n;
+
+    switch (f) {
+    case FanDirection::FOUR_ROWS:
+        x = (double)(i % 13) * 30.0;
+        y = (double)(i / 13) * 30.0;
+        break;
+    case FanDirection::HORIZONTAL:
+        x = (double)(fanRegion.left() + i*xDistance);
+        y = (double)(fanRegion.top());
+        break;
+    case FanDirection::VERTICAL:
+        x = (double)(fanRegion.left());
+        y = (double)(fanRegion.top() + i*yDistance);
+        break;
+
+    }
+    return QPointF(x, y);
+}
 
 /******************************************************************************
  * CardStack Implementation
  *****************************************************************************/
 CardStack::CardStack(QGraphicsItem *parent)
-    :QGraphicsItem{parent}
+    :QGraphicsObject{parent}
     ,mColor{Qt::lightGray}
     ,mDragOver{false}
 {
@@ -32,6 +71,7 @@ CardStack::~CardStack() {
         qDebug() << "Destroyed CardStack" << this;
     }
 }
+
 
 QRectF CardStack::boundingRect() const
 {
@@ -100,6 +140,45 @@ SortedStack::~SortedStack()
 
 }
 
+void SortedStack::fanCards(FanDirection dir)
+{
+    QSizeF newLocation{0.0, 0.0};
+    QPropertyAnimation* a;
+    QParallelAnimationGroup aGroup;
+
+    int i {0};
+    int numCards = mCards.size()+1;
+
+    for (auto it : mCards) {
+        a = new QPropertyAnimation(it, "pos");
+        a->setDuration(FAN_DURATION_MS);
+        a->setEasingCurve(QEasingCurve::InOutBack);
+        a->setStartValue(it->pos());
+        a->setEndValue(getFanLocation(i, numCards, FanDirection::HORIZONTAL, QRect(100,20, 700,80)));
+        aGroup.addAnimation(a);
+        i++;
+    }
+
+    QObject::connect(&aGroup, &QAbstractAnimation::finished, this, &SortedStack::fanAnimationFinished);
+    aGroup.start(QAbstractAnimation::DeleteWhenStopped);
+
+}
+
+void SortedStack::fanAnimationFinished() {
+
+    int i = 0;
+    Card *prevCard = nullptr;
+
+    for (auto it : mCards) {
+        if (prevCard) {
+            it->stackBefore(prevCard);
+        }
+        prevCard = it;
+    }
+    update();
+}
+
+
 void SortedStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(option);
@@ -159,7 +238,6 @@ const char *SortedStack::getImagePath(Suite s)
     case Suite::CLUB: return ":/images/Club.svg"; break;
     default:    return nullptr;
     }
-
 }
 
 
@@ -176,12 +254,95 @@ RandomStack::RandomStack(QGraphicsItem *parent)
         mImage->setOpacity(0.4);
         mImage->setPos(-CARD_WIDTH/2.0, -CARD_HEIGHT/2.0);
     }
-
 }
 
 RandomStack::~RandomStack()
 {
 
+}
+
+//TODO: QParallelAnimationGroup is not working!  WTH!
+static bool useGroup = false;
+
+void RandomStack::fanCards(FanDirection dir)
+{
+    QPropertyAnimation* a;
+    QParallelAnimationGroup aGroup{this};
+    QSizeF newLocation{0.0, 0.0};
+    int i {0};
+    int numCards = mCards.size()+1;
+
+    for (auto it : mCards) {
+        a = new QPropertyAnimation(it, "pos");
+        a->setDuration(FAN_DURATION_MS);
+        a->setEasingCurve(QEasingCurve::InOutBack);
+        a->setStartValue(it->pos());
+        a->setEndValue(getFanLocation(i, numCards, dir, QRect(20,20, 600,80)));
+        if (useGroup)
+            aGroup.addAnimation(a);
+        else
+            a->start();
+
+        i++;
+    }
+
+    // BUG: ?? Connect succeeds for the finished slot, but the slot is not called, had to workaround using statechange.
+    //      Possible OSX only problem? Check on windows
+    //bool result = QObject::connect(&aGroup, &QAbstractAnimation::finished, this, &RandomStack::fanAnimationFinished);
+
+    bool result2 = QObject::connect(&aGroup, &QAbstractAnimation::stateChanged, this, &RandomStack::onUpdateState);
+    qDebug() << "Animation" ""<< (useGroup ?  "Group" : "noGroup") << "Connected:" << result2 << "Duration: " << aGroup.duration();
+    if (useGroup)
+        aGroup.start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void RandomStack::onUpdateState(QAbstractAnimation::State newState, QAbstractAnimation::State oldState)
+{
+    qDebug() << "New State:" << newState;
+    if (oldState == QAbstractAnimation::Running && newState == QAbstractAnimation::Stopped) {
+        this->fanAnimationFinished();
+    }
+}
+
+/**
+ * @brief RandomStack::fanAnimationFinished - Attempt to reorder the cards after shuffling
+ *
+ * The fan animation lays out the cards based on their position in the deck.
+ * After shuffling the deck, the cards are currently not stacked in order,
+ * so the appearance is odd. This is an attempt to get them to stack in order,
+ * but is not currently working.
+ *
+ * Algorithm variable tries a bunch of different stuff to make it happen. No dice.
+ */
+
+static int algorithm = 0;
+
+void RandomStack::fanAnimationFinished() {
+
+    Card *prevCard = nullptr;
+    int i = 0;
+
+    for (auto it : mCards) {
+        if (prevCard) {
+            if (algorithm % 3 == 0) {
+                it->setPos(it->pos());
+            } else if (algorithm % 3 == 1) {
+                it->setZValue(i);
+            } else if (algorithm % 3 == 2) {
+                it->stackBefore(prevCard);
+            }
+            i++;
+            it->hide();
+            it->update();
+        }
+        prevCard = it;
+    }
+    qDebug() << "Fanned cards using algorithm " << algorithm++;
+
+    for (auto it: mCards) {
+        it->show();
+    }
+    update();
 }
 
 void RandomStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)

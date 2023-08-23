@@ -40,7 +40,7 @@ Game::Game(QWidget* parent)
             Card *item = new Card(value, suite, nullptr);
             item->setPos(30+(double)(value)*30.0, 3*CARD_HEIGHT/2+2*TOP_MARGIN+(double)suite*22);
 
-            bool result = QObject::connect(item, &Card::clicked, this, &Game::onCardClicked);
+            QObject::connect(item, &Card::clicked, this, &Game::onCardClicked);
             mScene->addItem(item);
             mDeck->addCard(*item);
         }
@@ -57,7 +57,7 @@ Game::Game(QWidget* parent)
     // Create Sorted Stacks to drop cards into to win (Ace -> King, only one suite)
     for (Suite suite: SuiteIterator()) {
         SortedStack *stack = new SortedStack(suite, nullptr);
-        stack->setPos(GAME_WIDTH/2 + (double)suite*(CARD_WIDTH+CARD_SPACING), TOP_MARGIN+CARD_HEIGHT/2);
+        stack->setPos(CARD_SPACING+3*(CARD_WIDTH+CARD_SPACING) + (double)suite*(CARD_WIDTH+CARD_SPACING), TOP_MARGIN+CARD_HEIGHT/2);
         stack->setTransform(QTransform::fromScale(1.0, 1.0), true);
         mScene->addItem(stack);
         switch(suite) {
@@ -113,10 +113,21 @@ void Game::onCardClicked(Card& card)
     qDebug() << "Clicked" << card.getText();
 }
 
+static FanDirection direction = FanDirection::FOUR_ROWS;
+
 void Game::onShuffleClicked()
 {
     qDebug() << __func__;
     mDeck->shuffle();
+    mDeck->fanCards(direction);
+    if (direction == FanDirection::FOUR_ROWS) {
+        direction = FanDirection::HORIZONTAL;
+    } else if (direction == FanDirection::HORIZONTAL) {
+        direction = FanDirection::VERTICAL;
+    } else {
+        direction = FanDirection::FOUR_ROWS;
+    }
+    update();
 }
 
 void Game::onDealClicked()

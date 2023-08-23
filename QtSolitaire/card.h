@@ -5,7 +5,7 @@
 
 #include <QChar>
 #include <QColor>
-#include <QGraphicsItem>
+#include <QGraphicsObject>
 
 QT_FORWARD_DECLARE_CLASS(QGraphicsSvgItem)
 
@@ -40,7 +40,7 @@ enum class Colors {
 };
 typedef enumIterator<Colors, Colors::RED, Colors::BLACK> ColorsIterator;
 
-class Card : public QObject, public QGraphicsItem
+class Card : public QGraphicsObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(Card)
