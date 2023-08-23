@@ -83,7 +83,6 @@ void CardStack::dropEvent(QGraphicsSceneDragDropEvent *event)
  *****************************************************************************/
 SortedStack::SortedStack(Suite s, QGraphicsItem *parent)
     : CardStack(parent)
-    , mDropAccepted(false)
     , mSuite{s}
 {
     const char *imgPath = getImagePath(s);
@@ -111,7 +110,7 @@ void SortedStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     } else  {
         painter->setPen(Qt::lightGray);
     }
-    if (!mDropAccepted) {
+    if (mCards.size() == 0) {
         painter->setBrush(Qt::NoBrush);
         painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
     } else {
@@ -136,7 +135,6 @@ void SortedStack::dropEvent(QGraphicsSceneDragDropEvent *event)
         if (droppedCard && droppedCard->getSuite() == mSuite) {
             if((droppedCard->getValue() == testValue) ||
                 testValue == droppedCard->getValue()) {
-                mDropAccepted = true;
                 mImage->setVisible(false);
                 droppedCard->setPos(QPoint(0,0));
 
@@ -170,7 +168,6 @@ const char *SortedStack::getImagePath(Suite s)
  *****************************************************************************/
 RandomStack::RandomStack(QGraphicsItem *parent)
     : CardStack(parent)
-    , mDropAccepted(false)
 {
     const char *imgPath = getImagePath();
     if (imgPath != nullptr) {
@@ -197,7 +194,7 @@ void RandomStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     } else  {
         painter->setPen(Qt::lightGray);
     }
-    if (!mDropAccepted) {
+    if (mCards.size() == 0) {
         painter->setBrush(Qt::NoBrush);
         painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
     } else {

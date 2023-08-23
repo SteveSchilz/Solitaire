@@ -52,7 +52,6 @@ protected:
 private:
     const char *getImagePath(Suite s);
 
-    bool mDropAccepted;
     QStack<Card*> mCards;
     Suite mSuite;
     QGraphicsSvgItem *mImage;
@@ -80,7 +79,6 @@ protected:
 
     const char *getImagePath();
 
-    bool mDropAccepted;
     QList<Card*> mCards;
     QGraphicsSvgItem *mImage;
 
