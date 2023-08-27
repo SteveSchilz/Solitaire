@@ -13,13 +13,23 @@
 #include <QDebug>
 #include <QGraphicsSvgItem>
 
-
+/******************************************************************************
+  * Card Implementation
+  *****************************************************************************/
+/**
+  * @brief Ctor
+  * @param v Card Value Ace -> King
+  * @param s Sute (Heart, Diamond, Club, Spade)
+  * @param parent object
+  */
 Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
     :QGraphicsObject(parent)
+    ,mFaceUp(true)
     ,mMouseDown(false)
     ,mValue(v)
     ,mSuite(s)
     ,mImage{nullptr}
+    ,mBackImage{nullptr}
     ,mColor{Qt::red}
 {
     if (mSuite == Suite::CLUB || mSuite == Suite::SPADE) {
@@ -37,7 +47,14 @@ Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
         mImage = new QGraphicsSvgItem(getImagePath(), this);
         mImage->setScale(SVG_SCALEF);
         mImage->setTransformOriginPoint(QPointF(-CARD_WIDTH/2, -3-CARD_HEIGHT/2));
+        mImage->setVisible(true);
     }
+
+    mBackImage = new QGraphicsSvgItem(":/images/Card-Back.svg", this);
+    mBackImage->setScale(SVG_SCALEF);
+    mBackImage->setTransformOriginPoint(QPointF(-CARD_WIDTH/2, -3-CARD_HEIGHT/2));
+    mBackImage->setVisible(false);
+
     mPaintText = QString(getValueText()) + QString(getSuiteChar());
 
     // Hacky debug level, static cast became necessary when we added signal to this
@@ -51,6 +68,20 @@ Card::~Card() {
 
     if (debugLevel >= DEBUG_LEVEL::NORMAL) {
         qDebug() << "Destroyed Card" << static_cast<QGraphicsItem*>(this);
+    }
+}
+
+void Card::setFaceUp(bool faceUp)
+{
+    if (faceUp != mFaceUp) {
+        mFaceUp = faceUp;
+        if (mImage) {
+            mImage->setVisible(faceUp);
+        }
+        if (mBackImage) {
+            mBackImage->setVisible(!faceUp);
+        }
+        update();
     }
 }
 
@@ -75,9 +106,9 @@ void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
         // NOTE: QGraphicsSvgItem has it's own paint method!
         //       Code below works, but performs a second paint on the image.
         //       We don't need to do anything here...
-        painter->scale(SVG_SCALEF, SVG_SCALEF);
-        painter->translate(QPointF(-(CARD_WIDTH/(SVG_SCALEF*2)),  -(CARD_HEIGHT/(SVG_SCALEF*2))));
-        mImage->paint(painter, option, widget);
+    //    painter->scale(SVG_SCALEF, SVG_SCALEF);
+    //    painter->translate(QPointF(-(CARD_WIDTH/(SVG_SCALEF*2)),  -(CARD_HEIGHT/(SVG_SCALEF*2))));
+    //    mImage->paint(painter, option, widget);
 
     } else {
         // Draw Drop shadow

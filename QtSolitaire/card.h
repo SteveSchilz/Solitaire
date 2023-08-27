@@ -50,6 +50,9 @@ public:
     Card(CardValue v, Suite s, QGraphicsItem *parent = nullptr);
     ~Card();
 
+    bool isFaceUp() const { return mFaceUp; }
+    void setFaceUp(bool faceUp);
+
     Suite getSuite() const { return mSuite; }
     QColor getColor() const { return mColor; }
     CardValue getValue() const { return mValue; }
@@ -73,10 +76,14 @@ protected:
     const char *getValueText();
     const char *getImagePath();
 
+    bool mFaceUp;             ///< True if card face is showing, otherwise back of card is visible
     bool mMouseDown;
     QColor mColor;
     QString mPaintText;
     QGraphicsSvgItem *mImage;
+
+    QGraphicsSvgItem *mBackImage;
+
     CardValue mValue;
     Suite mSuite;
 };
