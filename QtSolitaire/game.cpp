@@ -57,7 +57,7 @@ Game::Game(QWidget* parent)
     // Create Sorted Stacks to drop cards into to win (Ace -> King, only one suite)
     for (Suite suite: SuiteIterator()) {
         SortedStack *stack = new SortedStack(suite, nullptr);
-        stack->setPos(CARD_SPACING+3*(CARD_WIDTH+CARD_SPACING) + (double)suite*(CARD_WIDTH+CARD_SPACING), TOP_MARGIN+CARD_HEIGHT/2);
+        stack->setPos(4*CARD_SPACING+3*CARD_WIDTH + CARD_WIDTH/2 + (double)suite*(CARD_WIDTH+CARD_SPACING), TOP_MARGIN+CARD_HEIGHT/2);
         stack->setTransform(QTransform::fromScale(1.0, 1.0), true);
         mScene->addItem(stack);
         switch(suite) {
@@ -68,6 +68,12 @@ Game::Game(QWidget* parent)
         }
     }
 
+    // Create the playing field
+    for (int i = 0; i < NUM_PLAY_STACKS; i++) {
+        mPlayStacks[i] = new DescendingStack(nullptr);
+        mPlayStacks[i]->setPos(CARD_SPACING + CARD_WIDTH/2 + (double)i*(CARD_WIDTH+CARD_SPACING), +TOP_MARGIN+ 3*CARD_HEIGHT/2 + CARD_SPACING);
+        mScene->addItem(mPlayStacks[i]);
+    }
     // Create clickable links along the bottom
     qreal textWidth = 0;
     for(int i = 0; i < 3; i++) {

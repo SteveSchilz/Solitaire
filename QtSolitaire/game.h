@@ -2,11 +2,13 @@
 #define GAME_H
 
 #include "card.h"
+#include "constants.h"
 
 #include <QGraphicsView>
 
 // Forward Declarations
 class CardStack;
+class DescendingStack;
 class Deck;
 class myScene;
 
@@ -37,6 +39,7 @@ private:
     CardStack *mClubs;
     CardStack *mSpades;
 
+    DescendingStack* mPlayStacks[NUM_PLAY_STACKS] ;
 };
 
 #endif // GAME_H

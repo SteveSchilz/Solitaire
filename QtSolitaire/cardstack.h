@@ -50,6 +50,7 @@ protected:
  * - All cards must have the same Suite
  * - The stack is populated starting with an Ace, and increasing from there to a King
  *
+ * Cards are "fanned" vertically from the stack position downwards.
  */
 class SortedStack: public CardStack {
     Q_OBJECT
@@ -78,6 +79,46 @@ private:
     QStack<Card*> mCards;
     Suite mSuite;
     QGraphicsSvgItem *mImage;
+};
+
+/*!
+ * @class DescendingStack
+ * @brief DescendingStack class is used for the main playfield
+ *
+ * Cards are initially randomly arranged, with the top card face up, and others face down
+ * New cards may be dropped on the stack must satisfy the following conditions
+ *  a) Card must have the opposite color value
+ *  b) Card must be one value Lower than top face up card
+ */
+class DescendingStack: public CardStack {
+    Q_OBJECT
+    Q_DISABLE_COPY(DescendingStack)
+
+public:
+
+    DescendingStack() = delete;
+    DescendingStack(DescendingStack&) = delete;
+
+    DescendingStack(QGraphicsItem *parent = nullptr);
+    ~DescendingStack();
+
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
+
+    void dropEvent(QGraphicsSceneDragDropEvent *event) override;
+    void addCard(Card& card);
+    double getYOffset() const;
+
+    virtual void fanCards(FanDirection dir) override;
+
+protected slots:
+    void fanAnimationFinished();
+    void onUpdateState(QAbstractAnimation::State newState, QAbstractAnimation::State oldState);
+
+protected:
+
+    QStack<Card*> mCards;
+
 };
 
 

@@ -178,7 +178,6 @@ void SortedStack::fanAnimationFinished() {
     update();
 }
 
-
 void SortedStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(option);
@@ -239,6 +238,149 @@ const char *SortedStack::getImagePath(Suite s)
     default:    return nullptr;
     }
 }
+
+
+/******************************************************************************
+ * DescendingStack Implementation
+ *****************************************************************************/
+DescendingStack::DescendingStack(QGraphicsItem *parent)
+    : CardStack(parent)
+{
+
+}
+
+DescendingStack::~DescendingStack()
+{
+
+}
+
+QRectF DescendingStack::boundingRect() const
+{
+    double yAddress = getYOffset();
+    return QRectF(-(CARD_WIDTH/2), yAddress-(CARD_HEIGHT/2), CARD_WIDTH, yAddress+CARD_HEIGHT);
+}
+
+
+void DescendingStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+    painter->save();
+    if (mDragOver) {
+        painter->setPen(Qt::black);
+    } else if (mCards.size() == 0) {
+        painter->setPen(Qt::lightGray);
+    } else {
+        painter->setPen(Qt::NoPen);
+    }
+    painter->setBrush(Qt::NoBrush);
+    painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
+    painter->restore();
+}
+
+void DescendingStack::dropEvent(QGraphicsSceneDragDropEvent *event)
+{
+    Card *droppedCard{nullptr};
+    CardValue testValue = CardValue::KING;
+    QColor testColor = Qt::white;               // Use a non-valid color to allow drops when empty
+    double yAddress{0.0};
+
+    mDragOver = false;
+
+    if(event->mimeData()->hasFormat(CARD_MIME_TYPE)) {
+        QByteArray itemData = event->mimeData()->data("application/x-card");
+        QDataStream dataStream(&itemData, QIODevice::ReadOnly);
+        dataStream >> droppedCard;
+
+        // TODO: ugly casting to get next value of class enum!
+        // TODO: What happens if top card is ace?
+        if (!mCards.isEmpty()) {
+            if (mCards.top()->getValue() == CardValue::ACE) {
+                event->setAccepted(false);
+                return;
+            } else {
+                testValue = static_cast<CardValue>((int)mCards.top()->getValue() - 1);
+                testColor = mCards.top()->getColor();
+            }
+        }
+        if((droppedCard->getColor() != testColor ) &&
+            (droppedCard->getValue() == testValue)) {
+            mCards.push(droppedCard);
+            droppedCard->setPos(QPointF(0.0, this->getYOffset()));
+            droppedCard->setParentItem(this);
+            update();
+        } else
+        {
+            event->setAccepted(false);
+        }
+    } else {
+            event->setAccepted(false);
+        }
+}
+
+void DescendingStack::addCard(Card& card)
+{
+        mCards.push(&card);
+        card.setParentItem(this);
+        card.setPos(0,0);
+}
+
+double DescendingStack::getYOffset() const
+{
+        double yAddress = 0.0;
+        if (mCards.size() > 0) {
+            yAddress = ((double)mCards.size()-1)*15.0;
+        }
+        return yAddress;
+}
+
+void DescendingStack::fanCards(FanDirection dir)
+{
+        QSizeF newLocation{0.0, 0.0};
+        QPropertyAnimation* a;
+        QParallelAnimationGroup aGroup;
+
+        int i {0};
+        int numCards = mCards.size()+1;
+
+        for (auto it : mCards) {
+            a = new QPropertyAnimation(it, "pos");
+            a->setDuration(FAN_DURATION_MS);
+            a->setEasingCurve(QEasingCurve::InOutBack);
+            a->setStartValue(it->pos());
+            a->setEndValue(getFanLocation(i, numCards, FanDirection::HORIZONTAL, QRect(100,20, 700,80)));
+            aGroup.addAnimation(a);
+            i++;
+        }
+
+        QObject::connect(&aGroup, &QAbstractAnimation::finished, this, &DescendingStack::fanAnimationFinished);
+        aGroup.start(QAbstractAnimation::DeleteWhenStopped);
+
+}
+
+void DescendingStack::fanAnimationFinished() {
+
+        int i = 0;
+        Card *prevCard = nullptr;
+
+        for (auto it : mCards) {
+            if (prevCard) {
+            it->stackBefore(prevCard);
+            }
+            prevCard = it;
+        }
+        update();
+}
+
+
+void DescendingStack::onUpdateState(QAbstractAnimation::State newState, QAbstractAnimation::State oldState)
+{
+        qDebug() << "New State:" << newState;
+        if (oldState == QAbstractAnimation::Running && newState == QAbstractAnimation::Stopped) {
+            this->fanAnimationFinished();
+        }
+}
+
 
 
 /******************************************************************************
@@ -370,7 +512,6 @@ void RandomStack::addCard(Card& card)
     card.setParentItem(this);
     card.setPos(0,0);
 }
-
 
 const char *RandomStack::getImagePath()
 {
