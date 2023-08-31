@@ -35,12 +35,12 @@ void Deck::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     painter->restore();
 }
 
-void Deck::addCard(Card& card)
+void Deck::addCard(Card* card)
 {
     RandomStack::addCard(card);
     double x = (double)((mCards.size()-1) % 13) * 30.0;
     int y = (double)((mCards.size()-1) / 13) * 30.0;
-    card.setPos(x, y);
+    card->setPos(x, y);
 }
 
 void Deck::shuffle()

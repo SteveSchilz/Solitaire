@@ -110,7 +110,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
     void dropEvent(QGraphicsSceneDragDropEvent *event) override;
-    void addCard(Card& card);
+    void addCard(Card* card);
     double getYOffset() const;
 
     virtual void fanCards(FanDirection dir) override;
@@ -147,7 +147,8 @@ public:
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
-    void addCard(Card& card);
+    void addCard(Card *card);
+    Card *takeCard();
 
     virtual void fanCards(FanDirection dir) override;
 

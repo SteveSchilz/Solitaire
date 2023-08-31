@@ -318,11 +318,11 @@ void DescendingStack::dropEvent(QGraphicsSceneDragDropEvent *event)
         if (canAdd(*droppedCard))  {
             QGraphicsItem *otherStack = droppedCard->parentItem();
             DescendingStack *dStack = dynamic_cast<DescendingStack*>(otherStack);
-            if (dStack && dStack->mCards.back() == droppedCard) {
+            if (dStack && !dStack->mCards.empty() && dStack->mCards.back() == droppedCard) {
                 qDebug() << "taking from DescendingStack back";
                 dStack->mCards.pop_back();
             }
-            if (dStack && dStack->mCards.front() == droppedCard) {
+            if (dStack && !dStack->mCards.empty() && dStack->mCards.front() == droppedCard) {
                 qDebug() << "taking from DescendingStack frontk";
                 dStack->mCards.pop_front();
             }
@@ -339,11 +339,13 @@ void DescendingStack::dropEvent(QGraphicsSceneDragDropEvent *event)
         }
 }
 
-void DescendingStack::addCard(Card& card)
+void DescendingStack::addCard(Card* card)
 {
-        mCards.push(&card);
-        card.setParentItem(this);
-        card.setPos(0,0);
+        if (card) {
+            mCards.push(card);
+            card->setParentItem(this);
+            card->setPos(0,0);
+        }
 }
 
 double DescendingStack::getYOffset() const
@@ -532,11 +534,22 @@ void RandomStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->restore();
 }
 
-void RandomStack::addCard(Card& card)
+void RandomStack::addCard(Card* card)
 {
-    mCards.append(&card);
-    card.setParentItem(this);
-    card.setPos(0,0);
+    if (card) {
+        mCards.append(card);
+    //    card->setFaceUp(true);
+        card->setParentItem(this);
+        card->setPos(0,0);
+    }
+}
+
+Card *RandomStack::takeCard() {
+    Card* result{nullptr};
+    if (!mCards.isEmpty()) {
+        result = mCards.takeLast();
+    }
+    return result;
 }
 
 const char *RandomStack::getImagePath()

@@ -9,6 +9,7 @@
 // Forward Declarations
 class CardStack;
 class DescendingStack;
+class RandomStack;
 class Deck;
 class myScene;
 
@@ -31,8 +32,8 @@ private slots:
 private:
     myScene *mScene;
     Deck *mDeck;
-    CardStack *mHand;
-    CardStack *mWastePile;
+    RandomStack *mHand;
+    RandomStack *mWastePile;
 
     CardStack *mHearts;
     CardStack *mDiamonds;

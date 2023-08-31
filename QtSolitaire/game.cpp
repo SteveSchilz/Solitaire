@@ -42,7 +42,7 @@ Game::Game(QWidget* parent)
 
             QObject::connect(item, &Card::clicked, this, &Game::onCardClicked);
             mScene->addItem(item);
-            mDeck->addCard(*item);
+            mDeck->addCard(item);
         }
     }
 
@@ -139,6 +139,24 @@ void Game::onShuffleClicked()
 void Game::onDealClicked()
 {
     qDebug() << __func__;
+    int baseStack = 0;                              // Start at stack 0, go one heigher each iteration:
+    Card *card{nullptr};
+
+    for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
+        for (int j = baseStack; j < NUM_PLAY_STACKS; ++j) {
+           mPlayStacks[j]->addCard(mDeck->deal());
+        }
+        baseStack++;
+    }
+    while (! mDeck->isEmpty()) {
+        card = mDeck->deal();
+        card->setFaceUp(false);
+        mHand->addCard(card);        
+    }
+    card = mHand->takeCard();
+    qDebug() << "Top Card is " << card->getText() << "parent is: " << card->parentItem();
+    mHand->addCard(card);
+
 }
 
 void Game::onExitClicked()
