@@ -58,6 +58,7 @@ CardStack::CardStack(QGraphicsItem *parent)
 {
     setToolTip(QString("Drop Matching Cards Here\n"));
 
+    setAcceptedMouseButtons(Qt::LeftButton);
     setAcceptDrops(true);
 
     if (debugLevel >= DEBUG_LEVEL::VERBOSE) {
@@ -92,6 +93,38 @@ void CardStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
     painter->restore();
 }
+
+void CardStack::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    mMouseDown = false;
+    QGraphicsItem::hoverLeaveEvent(event);
+}
+
+void CardStack::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        mMouseDown = true;
+        event->accept();
+        setCursor(Qt::ClosedHandCursor);
+    }
+    else
+    {
+        event->ignore();
+    }
+}
+
+void CardStack::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (mMouseDown) {
+        mMouseDown = false;
+        emit clicked(*this);
+    }
+    setCursor(Qt::OpenHandCursor);
+    QGraphicsItem::mouseReleaseEvent(event);
+
+}
+
 
 void CardStack::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
 {

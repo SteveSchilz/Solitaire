@@ -21,7 +21,7 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
-    bool isEmpty() const { return mCards.isEmpty(); }
+    bool isEmpty() const override { return mCards.isEmpty(); }
     void addCard(Card* card);
     void shuffle();
     Card* deal();

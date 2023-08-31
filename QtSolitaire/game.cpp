@@ -48,6 +48,8 @@ Game::Game(QWidget* parent)
 
     mHand = new RandomStack(nullptr);
     mHand->setPos(CARD_SPACING+CARD_WIDTH/2, TOP_MARGIN+CARD_HEIGHT/2);
+    QObject::connect(mHand, &CardStack::clicked, this, &Game::onHandClicked);
+
     mScene->addItem(mHand);
 
     mWastePile = new RandomStack(nullptr);
@@ -112,6 +114,17 @@ void Game::showEvent(QShowEvent *event)
     this->setRenderHint(QPainter::Antialiasing);
     this->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     this->setBackgroundBrush(QColor(22, 161, 39));      // A medium dark green
+}
+
+void Game::onHandClicked(CardStack& stack)
+{
+
+    if( !mWastePile || mWastePile->isEmpty()) {
+        return;
+    }
+    while (!mWastePile->isEmpty()) {
+        mHand->addCard(mWastePile->takeCard());
+    }
 }
 
 void Game::onCardClicked(Card& card)

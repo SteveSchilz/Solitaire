@@ -24,6 +24,7 @@ protected:
     void showEvent(QShowEvent *event) override;
 
 private slots:
+    void onHandClicked(CardStack& stack);
     void onCardClicked(Card& card);
     void onShuffleClicked();
     void onDealClicked();

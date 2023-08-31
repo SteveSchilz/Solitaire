@@ -29,19 +29,31 @@ public:
     CardStack(QGraphicsItem *parent = nullptr);
     ~CardStack();
 
+
+    virtual bool canAdd(Card& card) const = 0;
+    virtual bool isEmpty() const = 0;
+
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
-    virtual bool canAdd(Card& card) const = 0;
     virtual void fanCards(FanDirection dir) = 0;  ///< Fan out the cards across a region of the table
 
+signals:
+    void clicked(CardStack& stack);
+
 protected:
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+
     void dragEnterEvent(QGraphicsSceneDragDropEvent *event) override;
     void dragLeaveEvent(QGraphicsSceneDragDropEvent *event) override;
     void dropEvent(QGraphicsSceneDragDropEvent *event) override;
 
     QColor mColor = Qt::lightGray;
     bool mDragOver = false;
+    bool mMouseDown = false;
 };
 
 /*!
@@ -67,6 +79,7 @@ public:
     ~SortedStack();
 
     virtual bool canAdd(Card& card) const override;
+    virtual bool isEmpty() const override { return mCards.isEmpty(); }
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
@@ -108,13 +121,16 @@ public:
     ~DescendingStack();
 
     virtual bool canAdd(Card& card) const override;
+    void addCard(Card* card);
+
+    double getYOffset() const;
+
+    virtual bool isEmpty() const override { return mCards.isEmpty(); }
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
     void dropEvent(QGraphicsSceneDragDropEvent *event) override;
-    void addCard(Card* card);
-    double getYOffset() const;
 
     virtual void fanCards(FanDirection dir) override;
 
@@ -150,11 +166,12 @@ public:
     ~RandomStack();
 
     virtual bool canAdd(Card& card) const override;
-
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
-
     void addCard(Card *card);
     Card *takeCard();
+
+    virtual bool isEmpty() const override { return mCards.isEmpty(); }
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
     virtual void fanCards(FanDirection dir) override;
 
