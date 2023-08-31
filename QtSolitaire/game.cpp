@@ -116,7 +116,16 @@ void Game::showEvent(QShowEvent *event)
 
 void Game::onCardClicked(Card& card)
 {
-    qDebug() << "Clicked" << card.getText();
+    Card *topCard{nullptr};
+    qDebug() << "Clicked" << card.getText() << "Parent" << card.parentItem();
+    if (card.parentItem() == mHand) {
+        topCard = mHand->takeCard();
+        topCard->setFaceUp(true);
+        mWastePile->addCard(topCard);
+        if (topCard->getValue() != card.getValue()) {
+            qDebug() << "SOMETHING IS WRONG IN ONCARD CLICKED!";
+        }
+    }
 }
 
 static FanDirection direction = FanDirection::FOUR_ROWS;
