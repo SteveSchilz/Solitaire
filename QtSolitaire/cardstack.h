@@ -54,6 +54,9 @@ protected:
  * Cards are "fanned" vertically from the stack position downwards.
  */
 class SortedStack: public CardStack {
+
+    friend class DescendingStack;
+
     Q_OBJECT
     Q_DISABLE_COPY(SortedStack)
 
@@ -132,6 +135,9 @@ protected:
  * There are no special rules for these cards
  */
 class RandomStack: public CardStack {
+
+    friend class DescendingStack;
+
     Q_OBJECT
     Q_DISABLE_COPY(RandomStack)
 

@@ -317,14 +317,38 @@ void DescendingStack::dropEvent(QGraphicsSceneDragDropEvent *event)
         }
         if (canAdd(*droppedCard))  {
             QGraphicsItem *otherStack = droppedCard->parentItem();
+
+            // TODO: This ugly stuff requires friend class definitions and removes the cards from the drag source stack
+            //       perhaps there is a way to remove them from the stack when the drag
+            //       starts and then undo that if the drag is canceled?
+            //       Might require serializing the cards onto the mime data??
             DescendingStack *dStack = dynamic_cast<DescendingStack*>(otherStack);
             if (dStack && !dStack->mCards.empty() && dStack->mCards.back() == droppedCard) {
                 qDebug() << "taking from DescendingStack back";
                 dStack->mCards.pop_back();
             }
             if (dStack && !dStack->mCards.empty() && dStack->mCards.front() == droppedCard) {
-                qDebug() << "taking from DescendingStack frontk";
+                qDebug() << "taking from DescendingStack front";
                 dStack->mCards.pop_front();
+            }
+            RandomStack *rStack = dynamic_cast<RandomStack*>(otherStack);
+            if (rStack && !rStack->mCards.empty() && rStack->mCards.back() == droppedCard) {
+                qDebug() << "taking from RandomStack back";
+                rStack->mCards.pop_back();
+            }
+            if (rStack && !rStack->mCards.empty() && rStack->mCards.front() == droppedCard) {
+                qDebug() << "taking from RandomStack frontk";
+                rStack->mCards.pop_front();
+            }
+
+            SortedStack *sStack = dynamic_cast<SortedStack*>(otherStack);
+            if (sStack && !sStack->mCards.empty() && sStack->mCards.back() == droppedCard) {
+                qDebug() << "taking from SortedStack back";
+                sStack->mCards.pop_back();
+            }
+            if (sStack && !sStack->mCards.empty() && sStack->mCards.front() == droppedCard) {
+                qDebug() << "taking from SortedStack frontk";
+                sStack->mCards.pop_front();
             }
 
             mCards.push(droppedCard);
