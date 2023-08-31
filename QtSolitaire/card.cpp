@@ -35,10 +35,6 @@ Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
     if (mSuite == Suite::CLUB || mSuite == Suite::SPADE) {
         mColor = Qt::black;
     }
-    setToolTip(QString("QColor(%1, %2, %3)\n%4")
-                   .arg(mColor.red()).arg(mColor.green()).arg(mColor.blue())
-                   .arg("Click and Drag card to play!"));
-
     setCursor(Qt::OpenHandCursor);
     setAcceptedMouseButtons(Qt::LeftButton);
 
@@ -57,16 +53,18 @@ Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
 
     mPaintText = QString(getValueText()) + QString(getSuiteChar());
 
+    setToolTip(QString("%1").arg(mPaintText));
+
     // Hacky debug level, static cast became necessary when we added signal to this
     // class, making the "this" pointer ambigous without it.
-    if (debugLevel >= DEBUG_LEVEL::NORMAL) {
+    if (debugLevel >= DEBUG_LEVEL::VERBOSE) {
         qDebug() << "Created Card" <<  static_cast<QGraphicsItem*>(this);
     }
 }
 
 Card::~Card() {
 
-    if (debugLevel >= DEBUG_LEVEL::NORMAL) {
+    if (debugLevel >= DEBUG_LEVEL::VERBOSE) {
         qDebug() << "Destroyed Card" << static_cast<QGraphicsItem*>(this);
     }
 }

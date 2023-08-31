@@ -60,14 +60,14 @@ CardStack::CardStack(QGraphicsItem *parent)
 
     setAcceptDrops(true);
 
-    if (debugLevel >= DEBUG_LEVEL::NORMAL) {
+    if (debugLevel >= DEBUG_LEVEL::VERBOSE) {
         qDebug() << "Created CardStack" << this;
     }
 }
 
 CardStack::~CardStack() {
 
-    if (debugLevel >= DEBUG_LEVEL::NORMAL) {
+    if (debugLevel >= DEBUG_LEVEL::VERBOSE) {
         qDebug() << "Destroyed CardStack" << this;
     }
 }
