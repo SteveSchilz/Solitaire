@@ -469,13 +469,6 @@ void DescendingStack::onUpdateState(QAbstractAnimation::State newState, QAbstrac
 RandomStack::RandomStack(QGraphicsItem *parent)
     : CardStack(parent)
 {
-    const char *imgPath = getImagePath();
-    if (imgPath != nullptr) {
-        mImage = new QGraphicsSvgItem(imgPath, this);
-        mImage->setScale(SVG_SCALEF);
-        mImage->setOpacity(0.4);
-        mImage->setPos(-CARD_WIDTH/2.0, -CARD_HEIGHT/2.0);
-    }
 }
 
 RandomStack::~RandomStack()
@@ -607,9 +600,4 @@ Card *RandomStack::takeCard() {
         result = mCards.takeLast();
     }
     return result;
-}
-
-const char *RandomStack::getImagePath()
-{
-    return ":/images/Card-Back.svg";
 }

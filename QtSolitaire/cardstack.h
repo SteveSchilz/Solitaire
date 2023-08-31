@@ -180,12 +180,7 @@ protected slots:
     void onUpdateState(QAbstractAnimation::State newState, QAbstractAnimation::State oldState);
 
 protected:
-
-    const char *getImagePath();
-
     QList<Card*> mCards;
-    QGraphicsSvgItem *mImage;
-
 };
 
 #endif // CARDSTACK_H
