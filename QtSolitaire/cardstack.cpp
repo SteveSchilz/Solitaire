@@ -140,6 +140,15 @@ SortedStack::~SortedStack()
 
 }
 
+bool SortedStack::canAdd(Card& card) const
+{
+    // TODO: ugly casting to get next value of class enum!
+    CardValue testValue = mCards.size() == 0 ? CardValue::ACE : static_cast<CardValue>((int)mCards.top()->getValue() +1);
+
+    return ((mSuite == card.getSuite()) &&
+            (testValue == card.getValue()));
+}
+
 void SortedStack::fanCards(FanDirection dir)
 {
     QSizeF newLocation{0.0, 0.0};
@@ -208,24 +217,18 @@ void SortedStack::dropEvent(QGraphicsSceneDragDropEvent *event)
         QDataStream dataStream(&itemData, QIODevice::ReadOnly);
 
         dataStream >> droppedCard;
-        // TODO: ugly casting to get next value of class enum!
-        CardValue testValue = mCards.size() == 0 ? CardValue::ACE : static_cast<CardValue>((int)mCards.top()->getValue() +1);
-        if (droppedCard && droppedCard->getSuite() == mSuite) {
-            if((droppedCard->getValue() == testValue) ||
-                testValue == droppedCard->getValue()) {
+        if (droppedCard && canAdd(*droppedCard)) {
                 mImage->setVisible(false);
                 droppedCard->setPos(QPoint(0,0));
 
                 droppedCard->setParentItem(this);
                 mCards.push(droppedCard);
+                event->setAccepted(true);
                 update();
             }
         } else {
             event->setAccepted(false);
         }
-    } else {
-        event->setAccepted(false);
-    }
 }
 
 const char *SortedStack::getImagePath(Suite s)
@@ -254,6 +257,25 @@ DescendingStack::~DescendingStack()
 
 }
 
+bool DescendingStack::canAdd(Card& card) const
+{
+    CardValue testValue = CardValue::KING;      // Empty stack will allow you to drop a king
+    QColor testColor = Qt::white;               // Use a non-valid color to allow drops when empty
+
+    // TODO: ugly casting to get next value of class enum!
+    if (!mCards.isEmpty()) {
+            if (mCards.top()->getValue() == CardValue::ACE) {
+                return false;
+            } else {
+                testValue = static_cast<CardValue>((int)mCards.top()->getValue() - 1);
+                testColor = mCards.top()->getColor();
+            }
+    }
+    return ((testValue == card.getValue()) &&
+            (testColor != card.getColor()));
+}
+
+
 QRectF DescendingStack::boundingRect() const
 {
     double yAddress = getYOffset();
@@ -281,8 +303,6 @@ void DescendingStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
 void DescendingStack::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
     Card *droppedCard{nullptr};
-    CardValue testValue = CardValue::KING;
-    QColor testColor = Qt::white;               // Use a non-valid color to allow drops when empty
     double yAddress{0.0};
 
     mDragOver = false;
@@ -291,26 +311,27 @@ void DescendingStack::dropEvent(QGraphicsSceneDragDropEvent *event)
         QByteArray itemData = event->mimeData()->data("application/x-card");
         QDataStream dataStream(&itemData, QIODevice::ReadOnly);
         dataStream >> droppedCard;
-
-        // TODO: ugly casting to get next value of class enum!
-        // TODO: What happens if top card is ace?
-        if (!mCards.isEmpty()) {
-            if (mCards.top()->getValue() == CardValue::ACE) {
+        if (!droppedCard) {
                 event->setAccepted(false);
                 return;
-            } else {
-                testValue = static_cast<CardValue>((int)mCards.top()->getValue() - 1);
-                testColor = mCards.top()->getColor();
-            }
         }
-        if((droppedCard->getColor() != testColor ) &&
-            (droppedCard->getValue() == testValue)) {
+        if (canAdd(*droppedCard))  {
+            QGraphicsItem *otherStack = droppedCard->parentItem();
+            DescendingStack *dStack = dynamic_cast<DescendingStack*>(otherStack);
+            if (dStack && dStack->mCards.back() == droppedCard) {
+                qDebug() << "taking from DescendingStack back";
+                dStack->mCards.pop_back();
+            }
+            if (dStack && dStack->mCards.front() == droppedCard) {
+                qDebug() << "taking from DescendingStack frontk";
+                dStack->mCards.pop_front();
+            }
+
             mCards.push(droppedCard);
             droppedCard->setPos(QPointF(0.0, this->getYOffset()));
             droppedCard->setParentItem(this);
             update();
-        } else
-        {
+        } else {
             event->setAccepted(false);
         }
     } else {
@@ -401,6 +422,11 @@ RandomStack::RandomStack(QGraphicsItem *parent)
 RandomStack::~RandomStack()
 {
 
+}
+
+bool RandomStack::canAdd(Card& card) const
+{
+    return false;
 }
 
 //TODO: QParallelAnimationGroup is not working!  WTH!

@@ -32,6 +32,7 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
+    virtual bool canAdd(Card& card) const = 0;
     virtual void fanCards(FanDirection dir) = 0;  ///< Fan out the cards across a region of the table
 
 protected:
@@ -62,6 +63,7 @@ public:
     SortedStack(Suite s, QGraphicsItem *parent = nullptr);
     ~SortedStack();
 
+    virtual bool canAdd(Card& card) const override;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
@@ -102,6 +104,8 @@ public:
     DescendingStack(QGraphicsItem *parent = nullptr);
     ~DescendingStack();
 
+    virtual bool canAdd(Card& card) const override;
+
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
@@ -138,6 +142,8 @@ public:
 
     RandomStack(QGraphicsItem *parent = nullptr);
     ~RandomStack();
+
+    virtual bool canAdd(Card& card) const override;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
