@@ -31,6 +31,10 @@ public:
 
 
     virtual bool canAdd(Card& card) const = 0;
+    virtual void addCard(Card *card) = 0;
+    virtual Card* takeCard(Card *card) = 0;
+    virtual Card* takeTop() = 0;
+
     virtual bool isEmpty() const = 0;
 
     QRectF boundingRect() const override;
@@ -66,9 +70,6 @@ protected:
  * Cards are "fanned" vertically from the stack position downwards.
  */
 class SortedStack: public CardStack {
-
-    friend class DescendingStack;
-
     Q_OBJECT
     Q_DISABLE_COPY(SortedStack)
 
@@ -79,6 +80,10 @@ public:
     ~SortedStack();
 
     virtual bool canAdd(Card& card) const override;
+    virtual void addCard(Card *card) override;
+    virtual Card* takeCard(Card *card) override;
+    virtual Card* takeTop() override;
+
     virtual bool isEmpty() const override { return mCards.isEmpty(); }
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
@@ -121,7 +126,9 @@ public:
     ~DescendingStack();
 
     virtual bool canAdd(Card& card) const override;
-    void addCard(Card* card);
+    virtual void addCard(Card *card) override;
+    virtual Card* takeCard(Card *card) override;
+    virtual Card* takeTop() override;
 
     double getYOffset() const;
 
@@ -152,8 +159,6 @@ protected:
  */
 class RandomStack: public CardStack {
 
-    friend class DescendingStack;
-
     Q_OBJECT
     Q_DISABLE_COPY(RandomStack)
 
@@ -166,8 +171,9 @@ public:
     ~RandomStack();
 
     virtual bool canAdd(Card& card) const override;
-    void addCard(Card *card);
-    Card *takeCard();
+    virtual void addCard(Card *card) override;
+    virtual Card *takeCard(Card *card) override;
+    virtual Card *takeTop() override;
 
     virtual bool isEmpty() const override { return mCards.isEmpty(); }
 

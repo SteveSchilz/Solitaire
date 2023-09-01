@@ -182,6 +182,43 @@ bool SortedStack::canAdd(Card& card) const
             (testValue == card.getValue()));
 }
 
+void SortedStack::addCard(Card *card) {
+    if (card) {
+        mCards.push(card);
+        card->setParentItem(this);
+        card->setPos(0, 0);
+    }
+}
+
+Card* SortedStack::takeCard(Card *card)
+{
+    if (!mCards.isEmpty() && mCards.back() == card) {
+        mCards.pop_back();
+        if (!mCards.isEmpty()) {
+            mCards.back()->setFaceUp(true);
+        }
+        qDebug() << "taking from DescendingStack, new Size = " << mCards.size();
+    } else {
+        mCards.removeOne(card);
+        qDebug() << "taking from not back!, new size = " << mCards.size();
+    }
+    return card;
+}
+
+Card* SortedStack::takeTop() {
+
+    Card *card = {nullptr};
+
+    if (!mCards.isEmpty()) {
+        card = mCards.pop();
+        if (!mCards.isEmpty()) {
+            mCards.back()->setFaceUp(true);
+        }
+        qDebug() << "taking top Card, new size = ", mCards.size();
+    }
+    return card;
+}
+
 void SortedStack::fanCards(FanDirection dir)
 {
     QSizeF newLocation{0.0, 0.0};
@@ -250,18 +287,33 @@ void SortedStack::dropEvent(QGraphicsSceneDragDropEvent *event)
         QDataStream dataStream(&itemData, QIODevice::ReadOnly);
 
         dataStream >> droppedCard;
-        if (droppedCard && canAdd(*droppedCard)) {
-                mImage->setVisible(false);
-                droppedCard->setPos(QPoint(0,0));
-
-                droppedCard->setParentItem(this);
-                mCards.push(droppedCard);
-                event->setAccepted(true);
-                update();
-            }
-        } else {
+        if (!droppedCard) {
             event->setAccepted(false);
+            return;
         }
+
+        if (canAdd(*droppedCard)) {
+            QGraphicsItem *otherStack = droppedCard->parentItem();
+            DescendingStack *dStack = dynamic_cast<DescendingStack*>(otherStack);
+            if (dStack) {
+                dStack->takeCard(droppedCard);
+            }
+
+            RandomStack *rStack = dynamic_cast<RandomStack*>(otherStack);
+            if (rStack) {
+                rStack->takeCard(droppedCard);
+            }
+
+            mImage->setVisible(false);
+            droppedCard->setPos(QPoint(0,0));
+            droppedCard->setParentItem(this);
+            mCards.push(droppedCard);
+            event->setAccepted(true);
+            update();
+        }
+    } else {
+        event->setAccepted(false);
+    }
 }
 
 const char *SortedStack::getImagePath(Suite s)
@@ -308,6 +360,46 @@ bool DescendingStack::canAdd(Card& card) const
             (testColor != card.getColor()));
 }
 
+void DescendingStack::addCard(Card* card)
+{
+    if (card) {
+            mCards.push(card);
+            card->setParentItem(this);
+            card->setPos(0, getYOffset());
+    }
+}
+
+Card* DescendingStack::takeCard(Card *card)
+{
+    if (!mCards.isEmpty()) {
+            if (mCards.back() == card) {
+                mCards.pop_back();
+                if (!mCards.isEmpty()) {
+                mCards.back()->setFaceUp(true);
+                }
+                qDebug() << "taking from DescendingStack, new Size = " << mCards.size();
+            } else {
+                mCards.removeOne(card);
+                qDebug() << "Taking from not back!, new Size =" << mCards.size();
+            }
+    }
+    return card;
+}
+
+Card* DescendingStack::takeTop() {
+
+    Card *card = {nullptr};
+
+    if (!mCards.isEmpty()) {
+            card = mCards.pop();
+            if (!mCards.isEmpty()) {
+                mCards.back()->setFaceUp(true);
+            }
+            qDebug() << "taking top Card, new size = ", mCards.size();
+    }
+    return card;
+}
+
 
 QRectF DescendingStack::boundingRect() const
 {
@@ -352,39 +444,19 @@ void DescendingStack::dropEvent(QGraphicsSceneDragDropEvent *event)
         if (canAdd(*droppedCard))  {
             QGraphicsItem *otherStack = droppedCard->parentItem();
 
-            // TODO: This ugly stuff requires friend class definitions and removes the cards from the drag source stack
-            //       perhaps there is a way to remove them from the stack when the drag
-            //       starts and then undo that if the drag is canceled?
-            //       Might require serializing the cards onto the mime data??
             DescendingStack *dStack = dynamic_cast<DescendingStack*>(otherStack);
-            if (dStack && !dStack->mCards.empty() && dStack->mCards.back() == droppedCard) {
-                qDebug() << "taking from DescendingStack back";
-                dStack->mCards.pop_back();
-                dStack->mCards.top()->setFaceUp(true);
+            if (dStack) {
+                dStack->takeCard(droppedCard);
             }
-            if (dStack && !dStack->mCards.empty() && dStack->mCards.front() == droppedCard) {
-                qDebug() << "taking from DescendingStack front";
-                dStack->mCards.pop_front();
-                dStack->mCards.top()->setFaceUp(true);
-            }
+
             RandomStack *rStack = dynamic_cast<RandomStack*>(otherStack);
-            if (rStack && !rStack->mCards.empty() && rStack->mCards.back() == droppedCard) {
-                qDebug() << "taking from RandomStack back";
-                rStack->mCards.pop_back();
-            }
-            if (rStack && !rStack->mCards.empty() && rStack->mCards.front() == droppedCard) {
-                qDebug() << "taking from RandomStack frontk";
-                rStack->mCards.pop_front();
+            if (rStack) {
+                rStack->takeCard(droppedCard);
             }
 
             SortedStack *sStack = dynamic_cast<SortedStack*>(otherStack);
-            if (sStack && !sStack->mCards.empty() && sStack->mCards.back() == droppedCard) {
-                qDebug() << "taking from SortedStack back";
-                sStack->mCards.pop_back();
-            }
-            if (sStack && !sStack->mCards.empty() && sStack->mCards.front() == droppedCard) {
-                qDebug() << "taking from SortedStack frontk";
-                sStack->mCards.pop_front();
+            if (sStack) {
+                sStack->takeCard(droppedCard);
             }
 
             mCards.push(droppedCard);
@@ -399,14 +471,6 @@ void DescendingStack::dropEvent(QGraphicsSceneDragDropEvent *event)
         }
 }
 
-void DescendingStack::addCard(Card* card)
-{
-        if (card) {
-            mCards.push(card);
-            card->setParentItem(this);
-            card->setPos(0, getYOffset());
-        }
-}
 
 double DescendingStack::getYOffset() const
 {
@@ -595,11 +659,29 @@ void RandomStack::addCard(Card* card)
         card->setPos(0,0);
     }
 }
+Card *RandomStack::takeCard(Card *card) {
 
-Card *RandomStack::takeCard() {
-    Card* result{nullptr};
     if (!mCards.isEmpty()) {
-        result = mCards.takeLast();
+        if (mCards.back() == card) {
+            mCards.pop_back();
+            if (!mCards.isEmpty()) {
+                mCards.back()->setFaceUp(true);
+            }
+            qDebug() << "taking from RandomStack, new Size = " << mCards.size();
+        } else {
+            mCards.removeOne(card);
+            qDebug() << "taking from not back, new Size = " << mCards.size();
+        }
     }
-    return result;
+    return card;
+
+}
+
+Card *RandomStack::takeTop() {
+    Card* card{nullptr};
+
+    if (!mCards.isEmpty()) {
+        card = mCards.takeLast();
+    }
+    return card;
 }

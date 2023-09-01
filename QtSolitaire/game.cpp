@@ -118,13 +118,17 @@ void Game::showEvent(QShowEvent *event)
 
 void Game::onHandClicked(CardStack& stack)
 {
+    Card *card{nullptr};
 
     if( !mWastePile || mWastePile->isEmpty()) {
         return;
     }
     while (!mWastePile->isEmpty()) {
-        mHand->addCard(mWastePile->takeCard());
+        card = mWastePile->takeTop();
+        card->setFaceUp(false);
+        mHand->addCard(card);
     }
+
 }
 
 void Game::onCardClicked(Card& card)
@@ -132,7 +136,7 @@ void Game::onCardClicked(Card& card)
     Card *topCard{nullptr};
     qDebug() << "Clicked" << card.getText() << "Parent" << card.parentItem();
     if (card.parentItem() == mHand) {
-        topCard = mHand->takeCard();
+        topCard = mHand->takeTop();
         topCard->setFaceUp(true);
         mWastePile->addCard(topCard);
         if (topCard->getValue() != card.getValue()) {
@@ -185,7 +189,7 @@ void Game::onDealClicked()
     }
 
     // Flip the top card over
-    card = mHand->takeCard();
+    card = mHand->takeTop();
     qDebug() << "Top Card is " << card->getText() << "parent is: " << card->parentItem();
     card->setFaceUp(true);
     mWastePile->addCard(card);
