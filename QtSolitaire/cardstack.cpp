@@ -312,9 +312,10 @@ bool DescendingStack::canAdd(Card& card) const
 QRectF DescendingStack::boundingRect() const
 {
     double yAddress = getYOffset();
-    return QRectF(-(CARD_WIDTH/2), yAddress-(CARD_HEIGHT/2), CARD_WIDTH, yAddress+CARD_HEIGHT);
+    QPointF topLeft{-CARD_WIDTH/2.0, -CARD_HEIGHT/2.0};
+    QSizeF size{CARD_WIDTH, yAddress+CARD_HEIGHT};
+    return QRectF(topLeft, size);
 }
-
 
 void DescendingStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
@@ -359,10 +360,12 @@ void DescendingStack::dropEvent(QGraphicsSceneDragDropEvent *event)
             if (dStack && !dStack->mCards.empty() && dStack->mCards.back() == droppedCard) {
                 qDebug() << "taking from DescendingStack back";
                 dStack->mCards.pop_back();
+                dStack->mCards.top()->setFaceUp(true);
             }
             if (dStack && !dStack->mCards.empty() && dStack->mCards.front() == droppedCard) {
                 qDebug() << "taking from DescendingStack front";
                 dStack->mCards.pop_front();
+                dStack->mCards.top()->setFaceUp(true);
             }
             RandomStack *rStack = dynamic_cast<RandomStack*>(otherStack);
             if (rStack && !rStack->mCards.empty() && rStack->mCards.back() == droppedCard) {
@@ -401,7 +404,7 @@ void DescendingStack::addCard(Card* card)
         if (card) {
             mCards.push(card);
             card->setParentItem(this);
-            card->setPos(0,0);
+            card->setPos(0, getYOffset());
         }
 }
 
@@ -409,7 +412,7 @@ double DescendingStack::getYOffset() const
 {
         double yAddress = 0.0;
         if (mCards.size() > 0) {
-            yAddress = ((double)mCards.size()-1)*15.0;
+            yAddress = ((double)mCards.size()-1)*CARD_OVERLAP;
         }
         return yAddress;
 }
@@ -588,7 +591,6 @@ void RandomStack::addCard(Card* card)
 {
     if (card) {
         mCards.append(card);
-    //    card->setFaceUp(true);
         card->setParentItem(this);
         card->setPos(0,0);
     }
