@@ -3,7 +3,64 @@ Qt Solitaire
 Opening Vector Art:
     Inkscape -> open file -> vectorstock_38016577.ai -> Cairo Import_
 
-# Date: 
+TODO: 
+  * Add click to move to destination methods
+  * Add more paint text to non-face cards. 
+  * Add drag stack handlers
+  * Add zoom game? 
+   
+# Date: 08/31/23 (Thurs)
+  * Revamp drop events so we don't need friends
+    * new cardStack methods addCard and TakeCard move access to cards inside the stack where
+      they belon 
+    * rename existing RandomStack->takeCard() -> TakeTop
+    * Adding takeCard to sorted stack fixed issues when flipping waste pile over.
+  * fixup dragging from RandomStack and SortedStack casses to the DescendingStacks
+  * Add "clicked" signal to CardStack, wire up mHand.clicked() to make it recover waste pile
+  * Remove unused "Card-Back" image from RandomStack (we draw outlines if empty).
+  
+# Date: 08/30/23 (Weds)
+  * Write a chatGPT prompt to tell it to write a solitaire game, based on the following changes 
+    from my design: 
+    a) Core Classes are C++ only, no knowledge of Qt
+    b) CardStacks ARE stacks (instead of having stacks)
+    c) iGui methods are used by core code where needed. 
+    
+    THe main thing I was hoping to learn was how to do the dependency inversion, and hook
+    all that together.  I don't know that I'm much further along 
+    
+    What i DID learn was:
+    * it gave some good advice, but was far from producing a working program
+    * dragging stacks of cards involves methods that accept LISTs of cards. 
+    * conflict between list and stack doesn't seem to be too much of a problem.
+          
+# Date: 08/28/23(Tues)
+  * Implement click on the mHand pile to flip top card to waste pile 
+  * Changed a bunch of card references to pointers in addCard/TakeCard
+  * used "Friend Classes" to remove cards from original stack in drop event
+    - This is kinda ugly but it works
+    - Alternative is probably to serialize list into mime data. 
+
+# Date: 08/28/23(Mon)
+
+ * Implemented "Deal" to spread cards along playfield
+   * Cards in mHand need to be faceDown.
+ * I realized that I am not dealing with ownership correctly
+   * Once I drag a card OUT of a DescendingStack, it never becomes empty again. 
+   
+ * Changed addCard/TakeCard stuff to use ugly raw pointers. 
+ * Looked some more at fanning cards animation - still does not work. 
+
+# Date 08/27/23 (Sun) 
+  * Create DescendingStack, initialize playfield with 7 empty stacks.
+  * Add ability for card to flip front and back
+
+# Date 08/24/23 (Fri) 
+  * Implment Deck::shuffle()
+  * Add Deck::fanCards 
+
+# Date 08/23/23    1.0 hr
+  * Fix animating back to original position when drop rejected
 
 # Date  08/22/23   6.0 hrs Stub in Deck, Add CardClick, add ClickableTextItem
   * Add Deck object with shuffle and deal methods

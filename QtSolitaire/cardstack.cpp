@@ -173,6 +173,13 @@ SortedStack::~SortedStack()
 
 }
 
+void SortedStack::newGame()
+{
+    if (mImage) {
+        mImage->setVisible(true);
+    }
+}
+
 bool SortedStack::canAdd(Card& card) const
 {
     // TODO: ugly casting to get next value of class enum!
@@ -340,6 +347,10 @@ DescendingStack::DescendingStack(QGraphicsItem *parent)
 DescendingStack::~DescendingStack()
 {
 
+}
+
+void DescendingStack::newGame()
+{
 }
 
 bool DescendingStack::canAdd(Card& card) const
@@ -543,6 +554,10 @@ RandomStack::~RandomStack()
 
 }
 
+void RandomStack::newGame()
+{
+}
+
 bool RandomStack::canAdd(Card& card) const
 {
     return false;
@@ -659,6 +674,7 @@ void RandomStack::addCard(Card* card)
         card->setPos(0,0);
     }
 }
+
 Card *RandomStack::takeCard(Card *card) {
 
     if (!mCards.isEmpty()) {

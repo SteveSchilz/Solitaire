@@ -78,7 +78,7 @@ Game::Game(QWidget* parent)
     }
     // Create clickable links along the bottom
     qreal textWidth = 0;
-    for(int i = 0; i < 3; i++) {
+    for(int i = 0; i < 4; i++) {
         ClickableGraphicsTextItem* item = new ClickableGraphicsTextItem(nullptr);
         switch (i) {
         case 0:
@@ -90,6 +90,11 @@ Game::Game(QWidget* parent)
             QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onDealClicked);
             break;
         case 2:
+            item->setPlainText(QString{"New Game"});
+            QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onNewGameClicked);
+            break;
+
+        case 3:
             item->setPlainText(QString{"Exit"});
             QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onExitClicked);
             break;
@@ -194,6 +199,63 @@ void Game::onDealClicked()
     card->setFaceUp(true);
     mWastePile->addCard(card);
 
+}
+
+void Game::onNewGameClicked()
+{
+    qDebug() << __func__;
+
+    Card *card{nullptr};
+
+    // Recover cards on the hand
+    while (!mHand->isEmpty()) {
+        card = mHand->takeTop();
+        mDeck->addCard(card);
+        card->setFaceUp(true);
+    }
+
+    // Recover cards on the Waste Pile
+    while (!mWastePile->isEmpty()) {
+        card = mWastePile->takeTop();
+        mDeck->addCard(card);
+        card->setFaceUp(true);
+    }
+
+    // Recover the Foundation (Sorted Stacks)
+    CardStack *sStack{nullptr};
+
+    for (Suite suite: SuiteIterator()) {
+        switch(suite) {
+        case Suite::HEART: sStack = mHearts; break;
+        case Suite::DIAMOND: sStack = mDiamonds; break;
+        case Suite::CLUB:   sStack = mClubs; break;
+        case Suite::SPADE:  sStack = mSpades; break;
+        }
+        while (!sStack->isEmpty()) {
+           card = sStack->takeTop();
+           mDeck->addCard(card);
+           card->setFaceUp(true);
+        }
+    }
+
+    // Recover cards on the tableau
+    for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
+        while (!mPlayStacks[i]->isEmpty()) {
+           card = mPlayStacks[i]->takeTop();
+           mDeck->addCard(card);
+           card->setFaceUp(true);
+        }
+    }
+
+    mHand->newGame();
+    mWastePile->newGame();
+    mHearts->newGame();
+    mDiamonds->newGame();
+    mSpades->newGame();
+    mClubs->newGame();
+    for (int i =0; i < NUM_PLAY_STACKS; ++i) {
+        mPlayStacks[i]->newGame();
+    }
 }
 
 void Game::onExitClicked()

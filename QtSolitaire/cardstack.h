@@ -29,6 +29,7 @@ public:
     CardStack(QGraphicsItem *parent = nullptr);
     ~CardStack();
 
+    virtual void newGame() = 0;
 
     virtual bool canAdd(Card& card) const = 0;
     virtual void addCard(Card *card) = 0;
@@ -79,6 +80,8 @@ public:
     SortedStack(Suite s, QGraphicsItem *parent = nullptr);
     ~SortedStack();
 
+    virtual void newGame() override;
+
     virtual bool canAdd(Card& card) const override;
     virtual void addCard(Card *card) override;
     virtual Card* takeCard(Card *card) override;
@@ -125,10 +128,13 @@ public:
     DescendingStack(QGraphicsItem *parent = nullptr);
     ~DescendingStack();
 
+    virtual void newGame() override;
+
     virtual bool canAdd(Card& card) const override;
     virtual void addCard(Card *card) override;
     virtual Card* takeCard(Card *card) override;
     virtual Card* takeTop() override;
+
 
     double getYOffset() const;
 
@@ -169,6 +175,8 @@ public:
 
     RandomStack(QGraphicsItem *parent = nullptr);
     ~RandomStack();
+
+    virtual void newGame() override;
 
     virtual bool canAdd(Card& card) const override;
     virtual void addCard(Card *card) override;
