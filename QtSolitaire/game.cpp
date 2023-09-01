@@ -161,23 +161,34 @@ void Game::onShuffleClicked()
 void Game::onDealClicked()
 {
     qDebug() << __func__;
+
     int baseStack = 0;                              // Start at stack 0, go one heigher each iteration:
     Card *card{nullptr};
 
+    // Deal the cards onto the tableau
     for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
         for (int j = baseStack; j < NUM_PLAY_STACKS; ++j) {
-           mPlayStacks[j]->addCard(mDeck->deal());
+            card = mDeck->deal();
+            mPlayStacks[j]->addCard(card);
+            if (i < j) {
+                card->setFaceUp(false);
+           }
         }
         baseStack++;
     }
+
+    // Move the remaining cards to the hand
     while (! mDeck->isEmpty()) {
         card = mDeck->deal();
         card->setFaceUp(false);
         mHand->addCard(card);        
     }
+
+    // Flip the top card over
     card = mHand->takeCard();
     qDebug() << "Top Card is " << card->getText() << "parent is: " << card->parentItem();
-    mHand->addCard(card);
+    card->setFaceUp(true);
+    mWastePile->addCard(card);
 
 }
 
