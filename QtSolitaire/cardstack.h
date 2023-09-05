@@ -134,7 +134,7 @@ public:
     virtual void addCard(Card *card) override;
     virtual Card* takeCard(Card *card) override;
     virtual Card* takeTop() override;
-
+    QList<Card*> takeCards(Card& card);
 
     double getYOffset() const;
 

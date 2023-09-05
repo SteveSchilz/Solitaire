@@ -406,11 +406,29 @@ Card* DescendingStack::takeTop() {
             if (!mCards.isEmpty()) {
                 mCards.back()->setFaceUp(true);
             }
-            qDebug() << "taking top Card, new size = ", mCards.size();
     }
     return card;
 }
 
+QList<Card*> DescendingStack::takeCards(Card& card)
+{
+    int startIndex{0},  moveCount{0};
+    QList<Card*> result;
+    if (mCards.empty()) {
+            return result;
+    }
+    startIndex = mCards.indexOf(&card);
+    if (startIndex == -1) {
+            return result;
+    }
+    moveCount = mCards.size()-startIndex;
+    result = mCards.mid(startIndex, moveCount);
+    mCards.remove(startIndex, moveCount);
+    if (!mCards.empty()) {
+        mCards.back()->setFaceUp(true);
+    }
+    return result;
+}
 
 QRectF DescendingStack::boundingRect() const
 {
@@ -440,6 +458,8 @@ void DescendingStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
 void DescendingStack::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
     Card *droppedCard{nullptr};
+    Card *card{nullptr};
+    QList<Card*> tempCards;
     double yAddress{0.0};
 
     mDragOver = false;
@@ -457,22 +477,31 @@ void DescendingStack::dropEvent(QGraphicsSceneDragDropEvent *event)
 
             DescendingStack *dStack = dynamic_cast<DescendingStack*>(otherStack);
             if (dStack) {
-                dStack->takeCard(droppedCard);
+                tempCards = dStack->takeCards(*droppedCard);
+                while (!tempCards.isEmpty()) {
+                    card = tempCards.takeFirst();
+                    mCards.push_back(card);
+                    card->setParentItem(this);
+                    card->setPos(QPointF(0.0, getYOffset()));
+                    card->update();
+                }
             }
 
             RandomStack *rStack = dynamic_cast<RandomStack*>(otherStack);
             if (rStack) {
                 rStack->takeCard(droppedCard);
+                mCards.push(droppedCard);
+                droppedCard->setPos(QPointF(0.0, this->getYOffset()));
+                droppedCard->setParentItem(this);
             }
 
             SortedStack *sStack = dynamic_cast<SortedStack*>(otherStack);
             if (sStack) {
                 sStack->takeCard(droppedCard);
+                mCards.push(droppedCard);
+                droppedCard->setPos(QPointF(0.0, this->getYOffset()));
+                droppedCard->setParentItem(this);
             }
-
-            mCards.push(droppedCard);
-            droppedCard->setPos(QPointF(0.0, this->getYOffset()));
-            droppedCard->setParentItem(this);
             update();
         } else {
             event->setAccepted(false);
