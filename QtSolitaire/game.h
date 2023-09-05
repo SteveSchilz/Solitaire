@@ -26,6 +26,7 @@ protected:
 private slots:
     void onHandClicked(CardStack& stack);
     void onCardClicked(Card& card);
+    void onCardDoubleClicked(Card& card);
     void onShuffleClicked();
     void onDealClicked();
     void onNewGameClicked();

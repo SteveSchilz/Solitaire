@@ -41,6 +41,7 @@ Game::Game(QWidget* parent)
             item->setPos(30+(double)(value)*30.0, 3*CARD_HEIGHT/2+2*TOP_MARGIN+(double)suite*22);
 
             QObject::connect(item, &Card::clicked, this, &Game::onCardClicked);
+            QObject::connect(item, &Card::doubleClicked, this, &Game::onCardDoubleClicked);
             mScene->addItem(item);
             mDeck->addCard(item);
         }
@@ -146,6 +147,59 @@ void Game::onCardClicked(Card& card)
         mWastePile->addCard(topCard);
         if (topCard->getValue() != card.getValue()) {
             qDebug() << "SOMETHING IS WRONG IN ONCARD CLICKED!";
+        }
+    }
+}
+
+void Game::onCardDoubleClicked(Card& card)
+{
+    // Move card from Waste Pile to main playfield
+    if (card.parentItem() == mWastePile) {
+        for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
+            if (mPlayStacks[i]->canAdd(card)) {
+                mWastePile->takeCard(&card);
+                mPlayStacks[i]->addCard(&card);
+                break;
+            }
+        }
+    }
+
+    // Move card from Waste Pile to Sorted Stacks Per-Suit)
+    CardStack* sStack{nullptr};
+    for (Suite suite: SuiteIterator()) {
+        switch(suite) {
+        case Suite::HEART: sStack = mHearts; break;
+        case Suite::DIAMOND: sStack = mDiamonds; break;
+        case Suite::CLUB:   sStack = mClubs; break;
+        case Suite::SPADE:  sStack = mSpades; break;
+        }
+
+        if (sStack->canAdd(card)) {
+            if (card.parentItem() == mWastePile) {
+                mWastePile->takeCard(&card);
+                sStack->addCard(&card);
+            }
+        }
+
+        // Check if card can move from main playfield to the Foundation Piles (Sorted Stacks)
+        for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
+            // TODO: Ensure that only top card moves (perhaps add "canTake" method?)
+            if (card.parentItem() == mPlayStacks[i] && sStack->canAdd(card)) {
+                mPlayStacks[i]->takeCard(&card);
+                sStack->addCard(&card);
+                break;
+            }
+            // Handle cards moving from one of the main playfield stacks to a different main playfield stack
+            for (int j = 0; j < NUM_PLAY_STACKS; ++j) {
+                if (i == j) {
+                    continue;
+                }
+                if (card.parentItem() == mPlayStacks[i] && mPlayStacks[j]->canAdd(card)) {
+                    mPlayStacks[i]->takeCard(&card);
+                    mPlayStacks[j]->addCard(&card);
+                    break;
+                }
+            }
         }
     }
 }

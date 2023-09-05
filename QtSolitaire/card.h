@@ -63,6 +63,7 @@ public:
 
 signals:
     void clicked(Card& card);
+    void doubleClicked(Card& card);
 
 protected:
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
@@ -70,6 +71,8 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+
 
  private:
     QChar getSuiteChar();

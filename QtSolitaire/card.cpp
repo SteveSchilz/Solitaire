@@ -55,8 +55,6 @@ Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
 
     setToolTip(QString("%1").arg(mPaintText));
 
-    // Hacky debug level, static cast became necessary when we added signal to this
-    // class, making the "this" pointer ambigous without it.
     if (debugLevel >= DEBUG_LEVEL::VERBOSE) {
         qDebug() << "Created Card" <<  static_cast<QGraphicsItem*>(this);
     }
@@ -221,6 +219,12 @@ void Card::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     setCursor(Qt::OpenHandCursor);
     QGraphicsItem::mouseReleaseEvent(event);
 }
+
+void Card::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    emit doubleClicked(*this);
+}
+
 
 QChar Card::getSuiteChar() {
 
