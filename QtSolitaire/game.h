@@ -5,6 +5,7 @@
 #include "constants.h"
 
 #include <QGraphicsView>
+#include <QUndoStack>
 
 // Forward Declarations
 class CardStack;
@@ -24,6 +25,8 @@ protected:
     void showEvent(QShowEvent *event) override;
 
 private slots:
+    void onUndoClicked();
+    void onRedoClicked();
     void onHandClicked(CardStack& stack);
     void onCardClicked(Card& card);
     void onCardDoubleClicked(Card& card);
@@ -44,6 +47,8 @@ private:
     CardStack *mSpades;
 
     DescendingStack* mPlayStacks[NUM_PLAY_STACKS] ;
+
+    QUndoStack mUndoStack;
 };
 
 #endif // GAME_H

@@ -24,6 +24,7 @@ Game::Game(QWidget* parent)
     , mDiamonds{nullptr}
     , mClubs{nullptr}
     , mSpades{nullptr}
+    , mUndoStack{}
 
 {
     mScene = new  myScene(0, 0, GAME_WIDTH, GAME_HEIGHT, parent);
@@ -79,23 +80,31 @@ Game::Game(QWidget* parent)
     }
     // Create clickable links along the bottom
     qreal textWidth = 0;
-    for(int i = 0; i < 4; i++) {
+    for(int i = 0; i < 6; i++) {
         ClickableGraphicsTextItem* item = new ClickableGraphicsTextItem(nullptr);
         switch (i) {
         case 0:
+            item->setPlainText(QString("Undo"));
+            QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onUndoClicked);
+            break;
+        case 1:
+            item->setPlainText(QString("Redo"));
+            QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onRedoClicked);
+            break;
+        case 2:
             item->setPlainText(QString("Shuffle"));
             QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onShuffleClicked);
             break;
-        case 1:
+        case 3:
             item->setPlainText(QString{"Deal"});
             QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onDealClicked);
             break;
-        case 2:
+        case 4:
             item->setPlainText(QString{"New Game"});
             QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onNewGameClicked);
             break;
 
-        case 3:
+        case 5:
             item->setPlainText(QString{"Exit"});
             QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onExitClicked);
             break;
@@ -120,6 +129,16 @@ void Game::showEvent(QShowEvent *event)
     this->setRenderHint(QPainter::Antialiasing);
     this->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     this->setBackgroundBrush(QColor(22, 161, 39));      // A medium dark green
+}
+
+void Game::onUndoClicked()
+{
+    qDebug() << "Undo!";
+}
+
+void Game::onRedoClicked()
+{
+    qDebug() << "Redo!";
 }
 
 void Game::onHandClicked(CardStack& stack)
