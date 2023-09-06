@@ -243,6 +243,11 @@ void Game::onShuffleClicked()
 void Game::onDealClicked()
 {
     qDebug() << __func__;
+    // This chekc is sufficent, because the deck is either full or empty at all times, except
+    // during the excution of this method.
+    if (!mDeck || mDeck->isEmpty()) {
+        return;
+    }
 
     int baseStack = 0;                              // Start at stack 0, go one heigher each iteration:
     Card *card{nullptr};
