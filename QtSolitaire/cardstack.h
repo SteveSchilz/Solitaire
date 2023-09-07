@@ -65,7 +65,7 @@ protected:
  * @class SortedStack
  * @brief The SortedStack class is used for the final destination for cards
  * The cards must satisfy the following characteristics:
- * - All cards must have the same Suite
+ * - All cards must have the same Suit
  * - The stack is populated starting with an Ace, and increasing from there to a King
  *
  * Cards are "fanned" vertically from the stack position downwards.
@@ -77,7 +77,7 @@ class SortedStack: public CardStack {
 public:
 
     SortedStack() = delete;
-    SortedStack(Suite s, QGraphicsItem *parent = nullptr);
+    SortedStack(Suit s, QGraphicsItem *parent = nullptr);
     ~SortedStack();
 
     virtual void newGame() override;
@@ -100,10 +100,10 @@ protected slots:
     void fanAnimationFinished();
 
 private:
-    const char *getImagePath(Suite s);
+    const char *getImagePath(Suit s);
 
     QStack<Card*> mCards;
-    Suite mSuite;
+    Suit mSuit;
     QGraphicsSvgItem *mImage;
 };
 

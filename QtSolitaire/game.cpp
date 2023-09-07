@@ -35,11 +35,11 @@ Game::Game(QWidget* parent)
     mScene->addItem(mDeck);
 
     // Create our cards
-    for (Suite suite: SuiteIterator() ) {
+    for (Suit suit: SuitIterator() ) {
         for (CardValue value: CardValueIterator()) {
 
-            Card *item = new Card(value, suite, nullptr);
-            item->setPos(30+(double)(value)*30.0, 3*CARD_HEIGHT/2+2*TOP_MARGIN+(double)suite*22);
+            Card *item = new Card(value, suit, nullptr);
+            item->setPos(30+(double)(value)*30.0, 3*CARD_HEIGHT/2+2*TOP_MARGIN+(double)suit*22);
 
             QObject::connect(item, &Card::clicked, this, &Game::onCardClicked);
             QObject::connect(item, &Card::doubleClicked, this, &Game::onCardDoubleClicked);
@@ -58,17 +58,17 @@ Game::Game(QWidget* parent)
     mWastePile->setPos(2*CARD_SPACING+ 3*CARD_WIDTH/2, TOP_MARGIN+CARD_HEIGHT/2);
     mScene->addItem(mWastePile);
 
-    // Create Sorted Stacks to drop cards into to win (Ace -> King, only one suite)
-    for (Suite suite: SuiteIterator()) {
-        SortedStack *stack = new SortedStack(suite, nullptr);
-        stack->setPos(4*CARD_SPACING+3*CARD_WIDTH + CARD_WIDTH/2 + (double)suite*(CARD_WIDTH+CARD_SPACING), TOP_MARGIN+CARD_HEIGHT/2);
+    // Create Sorted Stacks to drop cards into to win (Ace -> King, only one suit)
+    for (Suit suit: SuitIterator()) {
+        SortedStack *stack = new SortedStack(suit, nullptr);
+        stack->setPos(4*CARD_SPACING+3*CARD_WIDTH + CARD_WIDTH/2 + (double)suit*(CARD_WIDTH+CARD_SPACING), TOP_MARGIN+CARD_HEIGHT/2);
         stack->setTransform(QTransform::fromScale(1.0, 1.0), true);
         mScene->addItem(stack);
-        switch(suite) {
-        case Suite::HEART: mHearts = stack; break;
-        case Suite::DIAMOND: mDiamonds = stack; break;
-        case Suite::CLUB:   mClubs = stack; break;
-        case Suite::SPADE:  mSpades = stack; break;
+        switch(suit) {
+        case Suit::HEART: mHearts = stack; break;
+        case Suit::DIAMOND: mDiamonds = stack; break;
+        case Suit::CLUB:   mClubs = stack; break;
+        case Suit::SPADE:  mSpades = stack; break;
         }
     }
 
@@ -185,12 +185,12 @@ void Game::onCardDoubleClicked(Card& card)
 
     // Move card from Waste Pile to Sorted Stacks Per-Suit)
     CardStack* sStack{nullptr};
-    for (Suite suite: SuiteIterator()) {
-        switch(suite) {
-        case Suite::HEART: sStack = mHearts; break;
-        case Suite::DIAMOND: sStack = mDiamonds; break;
-        case Suite::CLUB:   sStack = mClubs; break;
-        case Suite::SPADE:  sStack = mSpades; break;
+    for (Suit suit: SuitIterator()) {
+        switch(suit) {
+        case Suit::HEART: sStack = mHearts; break;
+        case Suit::DIAMOND: sStack = mDiamonds; break;
+        case Suit::CLUB:   sStack = mClubs; break;
+        case Suit::SPADE:  sStack = mSpades; break;
         }
 
         if (sStack->canAdd(card)) {
@@ -302,12 +302,12 @@ void Game::onNewGameClicked()
     // Recover the Foundation (Sorted Stacks)
     CardStack *sStack{nullptr};
 
-    for (Suite suite: SuiteIterator()) {
-        switch(suite) {
-        case Suite::HEART: sStack = mHearts; break;
-        case Suite::DIAMOND: sStack = mDiamonds; break;
-        case Suite::CLUB:   sStack = mClubs; break;
-        case Suite::SPADE:  sStack = mSpades; break;
+    for (Suit suit: SuitIterator()) {
+        switch(suit) {
+        case Suit::HEART: sStack = mHearts; break;
+        case Suit::DIAMOND: sStack = mDiamonds; break;
+        case Suit::CLUB:   sStack = mClubs; break;
+        case Suit::SPADE:  sStack = mSpades; break;
         }
         while (!sStack->isEmpty()) {
            card = sStack->takeTop();

@@ -26,13 +26,13 @@ enum class CardValue {
 };
 typedef enumIterator<CardValue, CardValue::ACE, CardValue::KING> CardValueIterator;
 
-enum class Suite {
+enum class Suit {
     HEART,
     DIAMOND,
     SPADE,
     CLUB
 };
-typedef enumIterator<Suite, Suite::HEART, Suite::CLUB> SuiteIterator;
+typedef enumIterator<Suit, Suit::HEART, Suit::CLUB> SuitIterator;
 
 enum class Colors {
     RED,
@@ -47,13 +47,13 @@ class Card : public QGraphicsObject
 public:
 
     Card() = delete;
-    Card(CardValue v, Suite s, QGraphicsItem *parent = nullptr);
+    Card(CardValue v, Suit s, QGraphicsItem *parent = nullptr);
     ~Card();
 
     bool isFaceUp() const { return mFaceUp; }
     void setFaceUp(bool faceUp);
 
-    Suite getSuite() const { return mSuite; }
+    Suit getSuit() const { return mSuit; }
     QColor getColor() const { return mColor; }
     CardValue getValue() const { return mValue; }
     const QString& getText() const { return mPaintText; }
@@ -75,7 +75,7 @@ protected:
 
 
  private:
-    QChar getSuiteChar();
+    QChar getSuitChar();
     const char *getValueText();
     const char *getImagePath();
 
@@ -88,7 +88,7 @@ protected:
     QGraphicsSvgItem *mBackImage;
 
     CardValue mValue;
-    Suite mSuite;
+    Suit mSuit;
 };
 
 QDataStream & operator << (QDataStream & s, const Card *cardptr);

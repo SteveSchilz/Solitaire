@@ -22,17 +22,17 @@
   * @param s Sute (Heart, Diamond, Club, Spade)
   * @param parent object
   */
-Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
+Card::Card(CardValue v, Suit s, QGraphicsItem *parent)
     :QGraphicsObject(parent)
     ,mFaceUp(true)
     ,mMouseDown(false)
     ,mValue(v)
-    ,mSuite(s)
+    ,mSuit(s)
     ,mImage{nullptr}
     ,mBackImage{nullptr}
     ,mColor{Qt::red}
 {
-    if (mSuite == Suite::CLUB || mSuite == Suite::SPADE) {
+    if (mSuit == Suit::CLUB || mSuit == Suit::SPADE) {
         mColor = Qt::black;
     }
     setCursor(Qt::OpenHandCursor);
@@ -51,7 +51,7 @@ Card::Card(CardValue v, Suite s, QGraphicsItem *parent)
     mBackImage->setTransformOriginPoint(QPointF(-CARD_WIDTH/2, -3-CARD_HEIGHT/2));
     mBackImage->setVisible(false);
 
-    mPaintText = QString(getValueText()) + QString(getSuiteChar());
+    mPaintText = QString(getValueText()) + QString(getSuitChar());
 
     setToolTip(QString("%1").arg(mPaintText));
 
@@ -226,13 +226,13 @@ void Card::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-QChar Card::getSuiteChar() {
-
-    switch(mSuite) {
-    case Suite::HEART: return QChar::fromUcs2(0x2665); break;
-    case Suite::DIAMOND: return QChar::fromUcs2(0x2666); break;
-    case Suite::CLUB: return QChar::fromUcs2(0x2663);
-    case Suite::SPADE: return QChar::fromUcs2(0x2660);
+QChar Card::getSuitChar() {
+    
+    switch(mSuit) {
+    case Suit::HEART: return QChar::fromUcs2(0x2665); break;
+    case Suit::DIAMOND: return QChar::fromUcs2(0x2666); break;
+    case Suit::CLUB: return QChar::fromUcs2(0x2663);
+    case Suit::SPADE: return QChar::fromUcs2(0x2660);
     }
 }
 
@@ -258,8 +258,8 @@ const char *Card::getValueText() {
 }
 
 const char *Card::getImagePath() {
-    switch (mSuite) {
-    case Suite::HEART:
+    switch (mSuit) {
+    case Suit::HEART:
         switch(mValue) {
         case CardValue::KING:  return ":/images/King-Hearts.svg"; break;
         case CardValue::QUEEN: return ":/images/Queen-Hearts.svg"; break;
@@ -267,8 +267,8 @@ const char *Card::getImagePath() {
         default:    return nullptr;
         }
         break;
-
-    case Suite::DIAMOND:
+        
+    case Suit::DIAMOND:
         switch(mValue) {
         case CardValue::KING:  return ":/images/King-Diamonds.svg"; break;
         case CardValue::QUEEN: return ":/images/Queen-Diamonds.svg"; break;
@@ -276,7 +276,7 @@ const char *Card::getImagePath() {
         default:    return nullptr;
         }
         break;
-    case Suite::CLUB:
+    case Suit::CLUB:
         switch(mValue) {
         case CardValue::KING:  return ":/images/King-Clubs.svg"; break;
         case CardValue::QUEEN: return ":/images/Queen-Clubs.svg"; break;
@@ -284,7 +284,7 @@ const char *Card::getImagePath() {
         default:    return nullptr;
         }
         break;
-    case Suite::SPADE:
+    case Suit::SPADE:
         switch(mValue) {
         case CardValue::KING:  return ":/images/King-Spades.svg"; break;
         case CardValue::QUEEN: return ":/images/Queen-Spades.svg"; break;

@@ -154,9 +154,9 @@ void CardStack::dropEvent(QGraphicsSceneDragDropEvent *event)
 /******************************************************************************
  * SortedStack Implementation
  *****************************************************************************/
-SortedStack::SortedStack(Suite s, QGraphicsItem *parent)
+SortedStack::SortedStack(Suit s, QGraphicsItem *parent)
     : CardStack(parent)
-    , mSuite{s}
+    , mSuit{s}
 {
     const char *imgPath = getImagePath(s);
     if (imgPath != nullptr) {
@@ -184,8 +184,8 @@ bool SortedStack::canAdd(Card& card) const
 {
     // TODO: ugly casting to get next value of class enum!
     CardValue testValue = mCards.size() == 0 ? CardValue::ACE : static_cast<CardValue>((int)mCards.top()->getValue() +1);
-
-    return ((mSuite == card.getSuite()) &&
+    
+    return ((mSuit == card.getSuit()) &&
             (testValue == card.getValue()));
 }
 
@@ -323,13 +323,13 @@ void SortedStack::dropEvent(QGraphicsSceneDragDropEvent *event)
     }
 }
 
-const char *SortedStack::getImagePath(Suite s)
+const char *SortedStack::getImagePath(Suit s)
 {
     switch(s) {
-    case Suite::HEART: return ":/images/Heart.svg"; break;
-    case Suite::DIAMOND: return ":/images/Diamond.svg"; break;
-    case Suite::SPADE: return ":/images/Spade.svg"; break;
-    case Suite::CLUB: return ":/images/Club.svg"; break;
+    case Suit::HEART: return ":/images/Heart.svg"; break;
+    case Suit::DIAMOND: return ":/images/Diamond.svg"; break;
+    case Suit::SPADE: return ":/images/Spade.svg"; break;
+    case Suit::CLUB: return ":/images/Club.svg"; break;
     default:    return nullptr;
     }
 }
