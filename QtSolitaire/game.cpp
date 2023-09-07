@@ -13,7 +13,11 @@
 #include <QMessageBox>
 
 const bool showDeck{true};  //< Debug flag to show initial state of deck.
-
+/**
+ * @brief Game Constructor
+ *
+ * @param parent The central ui widget
+ */
 Game::Game(QWidget* parent)
     : QGraphicsView{parent}
     , mScene{nullptr}
@@ -22,18 +26,53 @@ Game::Game(QWidget* parent)
     , mWastePile{nullptr}
     , mHearts{nullptr}
     , mDiamonds{nullptr}
-    , mClubs{nullptr}
     , mSpades{nullptr}
+    , mClubs{nullptr}
     , mUndoStack{}
 
 {
     mScene = new  myScene(0, 0, GAME_WIDTH, GAME_HEIGHT, parent);
     mScene->setSceneRect(QRectF(0, 0, GAME_WIDTH, GAME_HEIGHT));
+    this->setScene(mScene);
 
-    mDeck = new Deck(showDeck, nullptr);
-    mDeck->setPos(CARD_SPACING+CARD_WIDTH/2, GAME_HEIGHT/2);
-    mScene->addItem(mDeck);
+    createDeck(mScene, &mDeck);                         // Create the deck
+    createCards(mScene, mDeck);                         // Create the cards and place them in the deck
+    createHandAndWaste(mScene, &mHand, &mWastePile);
+    createFoundation(mScene, &mHearts, &mDiamonds, &mSpades, &mClubs);
+    createPlayfield(mScene, &mPlayStacks[0]);
+    createActions(mScene);
+}
 
+void Game::showEvent(QShowEvent *event)
+{
+
+    this->setRenderHint(QPainter::Antialiasing);
+    this->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+    this->setBackgroundBrush(QColor(22, 161, 39));      // A medium dark green
+ }
+
+ /**
+  * @brief Create the Deck
+  *
+  * @param scene The graphics scene
+  * @param [out] deck - address of pointer to Deck holding the cards to be initialized
+  */
+void Game::createDeck(myScene *scene, Deck **deck) {
+    (*deck) = new Deck(showDeck, nullptr);
+    (*deck)->setPos(CARD_SPACING+CARD_WIDTH/2, GAME_HEIGHT/2);
+    scene->addItem(mDeck);
+}
+
+/**
+ * @brief Create the Cards
+ *
+ * @param scene The graphics scene
+ * @param deck  pointer to Deck holding the cards that are created
+ */
+void Game::createCards(myScene *scene, Deck *deck) {
+    if (!scene || !deck) {
+        return;
+    }
     // Create our cards
     for (Suit suit: SuitIterator() ) {
         for (CardValue value: CardValueIterator()) {
@@ -43,42 +82,85 @@ Game::Game(QWidget* parent)
 
             QObject::connect(item, &Card::clicked, this, &Game::onCardClicked);
             QObject::connect(item, &Card::doubleClicked, this, &Game::onCardDoubleClicked);
-            mScene->addItem(item);
-            mDeck->addCard(item);
+            scene->addItem(item);
+            deck->addCard(item);
         }
     }
+}
 
-    mHand = new RandomStack(nullptr);
-    mHand->setPos(CARD_SPACING+CARD_WIDTH/2, TOP_MARGIN+CARD_HEIGHT/2);
-    QObject::connect(mHand, &CardStack::clicked, this, &Game::onHandClicked);
+/**
+ * @brief Create the Hand and Waste Piles
+ *
+ * @param scene The graphics scene
+ * @param [out] deck - address of pointer to the Hand Stack that holds leftover cards after the deal
+ * @param [out] deck - address of pointer to the Waste pile Stack
+ */
+void Game::createHandAndWaste(myScene* scene, RandomStack **hand, RandomStack **wastePile)
+{
+    if (!scene || !hand || !wastePile) {
+        return;
+    }
 
-    mScene->addItem(mHand);
+    (*hand) = new RandomStack(nullptr);
+    (*hand)->setPos(CARD_SPACING+CARD_WIDTH/2, TOP_MARGIN+CARD_HEIGHT/2);
+    QObject::connect( (*hand), &CardStack::clicked, this, &Game::onHandClicked);
 
-    mWastePile = new RandomStack(nullptr);
-    mWastePile->setPos(2*CARD_SPACING+ 3*CARD_WIDTH/2, TOP_MARGIN+CARD_HEIGHT/2);
-    mScene->addItem(mWastePile);
+    scene->addItem( (*hand));
 
-    // Create Sorted Stacks to drop cards into to win (Ace -> King, only one suit)
+    (*wastePile) = new RandomStack(nullptr);
+    (*wastePile)->setPos(2*CARD_SPACING+ 3*CARD_WIDTH/2, TOP_MARGIN+CARD_HEIGHT/2);
+    scene->addItem((*wastePile));
+}
+/**
+ *  @brief Create Sorted Stacks to drop cards into to win (Ace -> King, only one suit)
+ *
+ *  @param [out] hearts pointer to pointer to be initialized for Foundation Stack Hearts
+ *  @param [out] diamonds pointer to pointer to be initialized for Foundation Stack Diamonds
+ *  @param [out] spades pointer to pointer to be initialized for Foundation Stack Spades
+ *  @param [out] clups pointer to pointer to be initialized for Foundation Stack Clubs
+ */
+void Game::createFoundation(myScene *scene, CardStack **hearts, CardStack **diamonds, CardStack **spades, CardStack **clubs)
+{
+    if (!scene || !hearts || !diamonds || !spades || !clubs) {
+        return;
+    }
+
     for (Suit suit: SuitIterator()) {
         SortedStack *stack = new SortedStack(suit, nullptr);
         stack->setPos(4*CARD_SPACING+3*CARD_WIDTH + CARD_WIDTH/2 + (double)suit*(CARD_WIDTH+CARD_SPACING), TOP_MARGIN+CARD_HEIGHT/2);
         stack->setTransform(QTransform::fromScale(1.0, 1.0), true);
-        mScene->addItem(stack);
+        scene->addItem(stack);
         switch(suit) {
-        case Suit::HEART: mHearts = stack; break;
-        case Suit::DIAMOND: mDiamonds = stack; break;
-        case Suit::CLUB:   mClubs = stack; break;
-        case Suit::SPADE:  mSpades = stack; break;
+        case Suit::HEART: (*hearts) = stack; break;
+        case Suit::DIAMOND: (*diamonds) = stack; break;
+        case Suit::SPADE:  (*spades) = stack; break;
+        case Suit::CLUB:   (*clubs) = stack; break;
         }
     }
+}
 
-    // Create the playing field
-    for (int i = 0; i < NUM_PLAY_STACKS; i++) {
-        mPlayStacks[i] = new DescendingStack(nullptr);
-        mPlayStacks[i]->setPos(CARD_SPACING + CARD_WIDTH/2 + (double)i*(CARD_WIDTH+CARD_SPACING), +TOP_MARGIN+ 3*CARD_HEIGHT/2 + CARD_SPACING);
-        mScene->addItem(mPlayStacks[i]);
+/**
+ * @brief Create the playing field
+ *
+ * @param[out] ptr-to-ptr to an array of DescendingStacks used to create the playfield
+ */
+void Game::createPlayfield(myScene *scene, pDStackArray stacks){
+
+    if (!scene || !stacks) {
+        return;
     }
-    // Create clickable links along the bottom
+
+    for (int i = 0; i < NUM_PLAY_STACKS; i++) {
+        stacks[i] = new DescendingStack(nullptr);
+        stacks[i]->setPos(CARD_SPACING + CARD_WIDTH/2 + (double)i*(CARD_WIDTH+CARD_SPACING), +TOP_MARGIN+ 3*CARD_HEIGHT/2 + CARD_SPACING);
+        scene->addItem(mPlayStacks[i]);
+    }
+}
+/*
+ * @brief Create menu actions and clickable links along the bottom
+ */
+void Game::createActions(myScene *scene)
+{
     qreal textWidth = 0;
     for(int i = 0; i < 6; i++) {
         ClickableGraphicsTextItem* item = new ClickableGraphicsTextItem(nullptr);
@@ -117,19 +199,10 @@ Game::Game(QWidget* parent)
         item->setDefaultTextColor(Qt::white);
         item->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
         item->setTextInteractionFlags(Qt::LinksAccessibleByMouse | Qt::LinksAccessibleByKeyboard);
-        mScene->addItem(item);
+        scene->addItem(item);
     }
-
-    this->setScene(mScene);
 }
 
-void Game::showEvent(QShowEvent *event)
-{
-
-    this->setRenderHint(QPainter::Antialiasing);
-    this->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-    this->setBackgroundBrush(QColor(22, 161, 39));      // A medium dark green
-}
 
 void Game::onUndoClicked()
 {

@@ -157,6 +157,8 @@ protected:
 
 };
 
+typedef DescendingStack* pDStack;   ///< Pointer to DescendingStack
+typedef DescendingStack* pDStackArray[];     ///< Array of pointers to DescendingStack
 
 /*!
  * @class RandomStack

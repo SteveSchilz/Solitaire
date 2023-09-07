@@ -4,11 +4,21 @@ Opening Vector Art:
     Inkscape -> open file -> vectorstock_38016577.ai -> Cairo Import_
 
 TODO: 
-  * Add click to move to destination methods
   * Add more paint text to non-face cards. 
-  * Add drag stack handlers
   * Add zoom game? 
    
+
+# Date: 09/07/23 (Thurs)
+  * split game constructor up into a bunch of methods.  Passing parameters to these methods
+    makes the constructor more readable and will make it more possible to test them, 
+    but it required the use of double pointers, so, more complex code overall.  
+  * Rename "Suite" to "Suit".  This was a typo in initial design.
+    
+  
+# Date: 09/05/23 (Tues)
+  * Add ability to drag stacks of cards between different playfield stacks
+  * Add Double-click to move cards to next destination.
+     
 # Date: 08/31/23 (Thurs)
   * Revamp drop events so we don't need friends
     * new cardStack methods addCard and TakeCard move access to cards inside the stack where

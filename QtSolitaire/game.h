@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include "card.h"
+#include "cardstack.h"
 #include "constants.h"
 
 #include <QGraphicsView>
@@ -20,6 +21,13 @@ class Game : public QGraphicsView
 public:
     Game() = delete;
     Game(QWidget* parent);
+
+    void createDeck(myScene *scene, Deck** deck);
+    void createCards(myScene *scene, Deck *deck);
+    void createHandAndWaste(myScene *scene, RandomStack **hand, RandomStack **wastePile);
+    void createFoundation(myScene *scene, CardStack **hearts, CardStack **diamonds, CardStack **Spades, CardStack **clubs);
+    void createPlayfield(myScene *scene, pDStackArray stacks);
+    void createActions(myScene *scene);
 
 protected:
     void showEvent(QShowEvent *event) override;
