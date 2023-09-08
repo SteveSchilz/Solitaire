@@ -15,12 +15,14 @@ class RandomStack;
 class Deck;
 class myScene;
 
+QT_FORWARD_DECLARE_CLASS(QMenuBar);
+
 class Game : public QGraphicsView
 {
     Q_OBJECT
 public:
     Game() = delete;
-    Game(QWidget* parent);
+    Game(QWidget* parent, QMenuBar *menubar);
 
     void createDeck(myScene *scene, Deck** deck);
     void createCards(myScene *scene, Deck *deck);
@@ -28,6 +30,7 @@ public:
     void createFoundation(myScene *scene, CardStack **hearts, CardStack **diamonds, CardStack **Spades, CardStack **clubs);
     void createPlayfield(myScene *scene, pDStackArray stacks);
     void createActions(myScene *scene);
+    void createMenus();
 
 protected:
     void showEvent(QShowEvent *event) override;
@@ -43,6 +46,13 @@ private slots:
     void onNewGameClicked();
     void onExitClicked();
 
+    void onUndoAction(bool checked=false);
+    void onRedoAction(bool checked=false);
+    void onShuffleAction(bool checked=false);
+    void onDealAction(bool checked=false);
+    void onNewGameAction(bool checked=false);
+    void onExitAction(bool checked=false);
+
 private:
     myScene *mScene;
     Deck *mDeck;
@@ -55,6 +65,14 @@ private:
     CardStack *mSpades;
 
     DescendingStack* mPlayStacks[NUM_PLAY_STACKS] ;
+
+    QAction *undoAction;
+    QAction *redoAction;
+    QAction *shuffleAction;
+    QAction *dealAction;
+    QAction *newGameAction;
+    QAction *exitAction;
+    QMenuBar *mMenuBar;
 
     QUndoStack mUndoStack;
 };

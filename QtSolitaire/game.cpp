@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QGraphicsView>
 #include <QMessageBox>
+#include <QMenuBar>
 
 const bool showDeck{true};  //< Debug flag to show initial state of deck.
 /**
@@ -18,7 +19,7 @@ const bool showDeck{true};  //< Debug flag to show initial state of deck.
  *
  * @param parent The central ui widget
  */
-Game::Game(QWidget* parent)
+Game::Game(QWidget* parent, QMenuBar *menubar)
     : QGraphicsView{parent}
     , mScene{nullptr}
     , mDeck{nullptr}
@@ -29,7 +30,7 @@ Game::Game(QWidget* parent)
     , mSpades{nullptr}
     , mClubs{nullptr}
     , mUndoStack{}
-
+    , mMenuBar{menubar}
 {
     mScene = new  myScene(0, 0, GAME_WIDTH, GAME_HEIGHT, parent);
     mScene->setSceneRect(QRectF(0, 0, GAME_WIDTH, GAME_HEIGHT));
@@ -41,6 +42,7 @@ Game::Game(QWidget* parent)
     createFoundation(mScene, &mHearts, &mDiamonds, &mSpades, &mClubs);
     createPlayfield(mScene, &mPlayStacks[0]);
     createActions(mScene);
+    createMenus();
 }
 
 void Game::showEvent(QShowEvent *event)
@@ -164,32 +166,81 @@ void Game::createActions(myScene *scene)
     qreal textWidth = 0;
     for(int i = 0; i < 6; i++) {
         ClickableGraphicsTextItem* item = new ClickableGraphicsTextItem(nullptr);
+        QAction *action = new QAction();
         switch (i) {
         case 0:
-            item->setPlainText(QString("Undo"));
+        {
+            QString undoStr{tr("Undo")};
+            item->setPlainText(undoStr);
             QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onUndoClicked);
-            break;
+
+            undoAction = action;
+            undoAction->setText(undoStr);
+            undoAction->setShortcut(tr("Ctrl+Z"));
+            QObject::connect(undoAction, &QAction::triggered, this, &Game::onUndoClicked);
+        }
+        break;
         case 1:
-            item->setPlainText(QString("Redo"));
+        {
+            QString redoStr(tr("Redo"));
+            item->setPlainText(redoStr);
             QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onRedoClicked);
-            break;
+
+            redoAction = action;
+            redoAction->setText(redoStr);
+            redoAction->setShortcut(tr("Shift+Ctrl+Z"));
+            QObject::connect(redoAction, &QAction::triggered, this, &Game::onRedoAction);
+        }
+        break;
         case 2:
-            item->setPlainText(QString("Shuffle"));
+        {
+            QString shuffleStr(tr("Shuffle"));
+            item->setPlainText(shuffleStr);
             QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onShuffleClicked);
-            break;
+
+            shuffleAction = action;
+            shuffleAction->setText(shuffleStr);
+            shuffleAction->setShortcut(tr("Ctrl+S"));
+            QObject::connect(shuffleAction, &QAction::triggered, this, &Game::onShuffleAction);
+        }
+        break;
         case 3:
-            item->setPlainText(QString{"Deal"});
+        {
+            QString dealString(tr("Deal"));
+            item->setPlainText(dealString);
             QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onDealClicked);
-            break;
+
+            dealAction = action;
+            dealAction->setText(dealString);
+            dealAction->setShortcut(tr("Ctrl+D"));
+            QObject::connect(dealAction, &QAction::triggered, this, &Game::onDealAction);
+        }
+        break;
         case 4:
-            item->setPlainText(QString{"New Game"});
+        {
+            QString newGameString(tr("New Game"));
+            item->setPlainText(newGameString);
             QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onNewGameClicked);
-            break;
+
+            newGameAction = action;
+            newGameAction->setText(newGameString);
+            newGameAction->setShortcut(tr("Ctrl+N"));
+            QObject::connect(newGameAction, &QAction::triggered, this, &Game::onNewGameAction);
+        }
+        break;
 
         case 5:
-            item->setPlainText(QString{"Exit"});
+        {
+            QString exitString(tr("Exit"));
+            item->setPlainText(exitString);
             QObject::connect(item, &ClickableGraphicsTextItem::clicked, this, &Game::onExitClicked);
-            break;
+
+            exitAction = action;
+            exitAction->setText(exitString);
+            exitAction->setShortcut(tr("Ctrl+Q"));
+            QObject::connect(exitAction, &QAction::triggered, this, &Game::onExitAction);
+        }
+        break;
         default:
             break;
         }
@@ -203,10 +254,32 @@ void Game::createActions(myScene *scene)
     }
 }
 
+void Game::createMenus() {
+
+    QMenuBar* fileMenu = reinterpret_cast<QMenuBar*>(mMenuBar->findChild<QObject*>("menuSolitaire"));
+    if (fileMenu) {
+        fileMenu->addAction(undoAction);
+        fileMenu->addAction(redoAction);
+        fileMenu->addAction(shuffleAction);
+        fileMenu->addAction(dealAction);
+        fileMenu->addAction(newGameAction);
+        fileMenu->addAction(exitAction);
+    }
+}
+
+void Game::onUndoAction(bool checked) {
+    Q_UNUSED(checked);
+    onUndoClicked();
+}
 
 void Game::onUndoClicked()
 {
     qDebug() << "Undo!";
+}
+
+void Game::onRedoAction(bool checked) {
+    Q_UNUSED(checked);
+    onRedoClicked();
 }
 
 void Game::onRedoClicked()
@@ -298,6 +371,11 @@ void Game::onCardDoubleClicked(Card& card)
 
 static FanDirection direction = FanDirection::FOUR_ROWS;
 
+void Game::onShuffleAction(bool checked) {
+    Q_UNUSED(checked);
+    onShuffleClicked();
+}
+
 void Game::onShuffleClicked()
 {
     qDebug() << __func__;
@@ -313,10 +391,15 @@ void Game::onShuffleClicked()
     update();
 }
 
+void Game::onDealAction(bool checked) {
+    Q_UNUSED(checked);
+    onDealClicked();
+}
+
 void Game::onDealClicked()
 {
     qDebug() << __func__;
-    // This chekc is sufficent, because the deck is either full or empty at all times, except
+    // This check is sufficent, because the deck is either full or empty at all times, except
     // during the excution of this method.
     if (!mDeck || mDeck->isEmpty()) {
         return;
@@ -350,6 +433,11 @@ void Game::onDealClicked()
     card->setFaceUp(true);
     mWastePile->addCard(card);
 
+}
+
+void Game::onNewGameAction(bool checked) {
+    Q_UNUSED(checked);
+    onNewGameClicked();
 }
 
 void Game::onNewGameClicked()
@@ -407,6 +495,11 @@ void Game::onNewGameClicked()
     for (int i =0; i < NUM_PLAY_STACKS; ++i) {
         mPlayStacks[i]->newGame();
     }
+}
+
+void Game::onExitAction(bool checked) {
+    Q_UNUSED(checked);
+    onExitClicked();
 }
 
 void Game::onExitClicked()

@@ -12,7 +12,8 @@ MainWindow::MainWindow(QWidget *parent)
     qDebug() << "Hello";
 
     // Game is automatically shown by the framework.
-    mGame = new Game{ui->centralwidget};
+    mGame = new Game{ui->centralwidget, ui->menubar};
+
 }
 
 MainWindow::~MainWindow()

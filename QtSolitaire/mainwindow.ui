@@ -30,8 +30,6 @@
     <property name="title">
      <string>Solitaire</string>
     </property>
-    <addaction name="action_New_Game"/>
-    <addaction name="action_Quit"/>
    </widget>
    <addaction name="menuSolitaire"/>
   </widget>
