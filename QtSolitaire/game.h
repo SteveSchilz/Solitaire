@@ -12,6 +12,7 @@
 class CardStack;
 class DescendingStack;
 class RandomStack;
+class SortedStack;
 class Deck;
 class myScene;
 
@@ -27,7 +28,7 @@ public:
     void createDeck(myScene *scene, Deck** deck);
     void createCards(myScene *scene, Deck *deck);
     void createHandAndWaste(myScene *scene, RandomStack **hand, RandomStack **wastePile);
-    void createFoundation(myScene *scene, CardStack **hearts, CardStack **diamonds, CardStack **Spades, CardStack **clubs);
+    void createFoundation(myScene *scene, SortedStack **hearts, SortedStack **diamonds, SortedStack **Spades, SortedStack **clubs);
     void createPlayfield(myScene *scene, pDStackArray stacks);
     void createActions(myScene *scene);
     void createMenus();
@@ -63,10 +64,10 @@ private:
     RandomStack *mHand;
     RandomStack *mWastePile;
 
-    CardStack *mHearts;
-    CardStack *mDiamonds;
-    CardStack *mClubs;
-    CardStack *mSpades;
+    SortedStack *mHearts;
+    SortedStack *mDiamonds;
+    SortedStack *mClubs;
+    SortedStack *mSpades;
 
     DescendingStack* mPlayStacks[NUM_PLAY_STACKS] ;
 

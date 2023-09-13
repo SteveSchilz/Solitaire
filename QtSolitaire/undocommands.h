@@ -5,15 +5,17 @@
 
 class Card;
 class RandomStack;
+class DescendingStack;
+class SortedStack;
 
 QT_FORWARD_DECLARE_CLASS(QGraphicsItem);
 /**
  * @brief The HandClickUndoCommand - Undo command for clicking on the hand pile
  */
-class HandClickCommand : public QUndoCommand
+class HandToWasteCommand : public QUndoCommand
 {
 public:
-    HandClickCommand(RandomStack *hand, RandomStack *wastePile);
+    HandToWasteCommand(RandomStack *hand, RandomStack *wastePile);
 
     void undo() override;
     void redo() override;
@@ -23,10 +25,10 @@ private:
     RandomStack *mWastePile;
 };
 
-class EmptyHandClickCommand : public QUndoCommand
+class ResetHandCommand : public QUndoCommand
 {
 public:
-    EmptyHandClickCommand(RandomStack *hand, RandomStack *wastePile);
+    ResetHandCommand(RandomStack *hand, RandomStack *wastePile);
 
     void undo() override;
     void redo() override;
@@ -34,6 +36,61 @@ public:
 private:
     RandomStack *mHand;
     RandomStack *mWastePile;
+};
+
+
+class MoveToPlayfieldCommand : public QUndoCommand
+{
+public:
+    MoveToPlayfieldCommand(RandomStack *wastePile, DescendingStack *dStack);
+
+    void undo() override;
+    void redo() override;
+
+private:
+    RandomStack *mWastePile;
+    DescendingStack *mDStack;
+};
+
+
+class WasteToFoundationCommand : public QUndoCommand
+{
+public:
+    WasteToFoundationCommand(RandomStack *wastePile, SortedStack *sStack);
+
+    void undo() override;
+    void redo() override;
+
+private:
+    RandomStack *mWastePile;
+    SortedStack *mSStack;
+};
+
+class PlayfieldToFoundationCommand : public QUndoCommand
+{
+public:
+    PlayfieldToFoundationCommand(DescendingStack *playfield, SortedStack *sStack);
+
+    void undo() override;
+    void redo() override;
+
+private:
+    DescendingStack *mPlayfieldStack;
+    SortedStack *mSStack;
+};
+
+
+class PlayfieldToPlayfieldCommand : public QUndoCommand
+{
+public:
+    PlayfieldToPlayfieldCommand(DescendingStack *playfieldFrom, DescendingStack *playfieldTo);
+
+    void undo() override;
+    void redo() override;
+
+private:
+    DescendingStack *mPlayfieldFrom;
+    DescendingStack *mPlayfieldTo;
 };
 
 

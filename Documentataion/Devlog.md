@@ -6,7 +6,15 @@ Opening Vector Art:
 TODO: 
   * Add more paint text to non-face cards. 
   * Add zoom game? 
+  * Enable the undo/redo items based on the undo stack.  
+    * Will require keeping a pointer to them, unless maybe I can change those to 
+      inherit or own the QActions?
    
+# Date: 09/12/23 (Tues) (3.5hrs)
+  * Initial work on undo commands
+  * Working undo/redo for clicks on the mHand stack.
+  * Implemented a bunch of undo commands for the click-to-move features
+    * Have some issues with faceUp being handled correctly
 
 # Date: 09/07/23 (Thurs)
   * split game constructor up into a bunch of methods.  Passing parameters to these methods

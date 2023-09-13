@@ -128,7 +128,7 @@ void Game::createHandAndWaste(myScene* scene, RandomStack **hand, RandomStack **
  *  @param [out] spades pointer to pointer to be initialized for Foundation Stack Spades
  *  @param [out] clups pointer to pointer to be initialized for Foundation Stack Clubs
  */
-void Game::createFoundation(myScene *scene, CardStack **hearts, CardStack **diamonds, CardStack **spades, CardStack **clubs)
+void Game::createFoundation(myScene *scene, SortedStack **hearts, SortedStack **diamonds, SortedStack **spades, SortedStack **clubs)
 {
     if (!scene || !hearts || !diamonds || !spades || !clubs) {
         return;
@@ -325,7 +325,7 @@ void Game::onEmptyHandClicked(CardStack& stack)
         return;
     }
     if (&stack == mHand) {
-        mUndoStack.push(new EmptyHandClickCommand(mHand, mWastePile));
+        mUndoStack.push(new ResetHandCommand(mHand, mWastePile));
     }
 }
 
@@ -333,7 +333,7 @@ void Game::onCardClicked(Card& card)
 {
     // Cards on the hand can move to the waste pile
     if (card.parentItem() == mHand) {
-        HandClickCommand *command = new HandClickCommand(mHand, mWastePile);
+        HandToWasteCommand *command = new HandToWasteCommand(mHand, mWastePile);
         mUndoStack.push(command);
     }
 
@@ -345,15 +345,15 @@ void Game::onCardDoubleClicked(Card& card)
     if (card.parentItem() == mWastePile) {
         for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
             if (mPlayStacks[i]->canAdd(card)) {
-                mWastePile->takeCard(&card);
-                mPlayStacks[i]->addCard(&card);
+                MoveToPlayfieldCommand *command = new MoveToPlayfieldCommand(mWastePile, mPlayStacks[i]);
+                mUndoStack.push(command);
                 break;
             }
         }
     }
 
     // Move card from Waste Pile to Sorted Stacks Per-Suit)
-    CardStack* sStack{nullptr};
+    SortedStack* sStack{nullptr};
     for (Suit suit: SuitIterator()) {
         switch(suit) {
         case Suit::HEART: sStack = mHearts; break;
@@ -364,8 +364,8 @@ void Game::onCardDoubleClicked(Card& card)
 
         if (sStack->canAdd(card)) {
             if (card.parentItem() == mWastePile) {
-                mWastePile->takeCard(&card);
-                sStack->addCard(&card);
+                WasteToFoundationCommand *command = new WasteToFoundationCommand(mWastePile, sStack);
+                mUndoStack.push(command);
             }
         }
 
@@ -373,8 +373,8 @@ void Game::onCardDoubleClicked(Card& card)
         for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
             // TODO: Ensure that only top card moves (perhaps add "canTake" method?)
             if (card.parentItem() == mPlayStacks[i] && sStack->canAdd(card)) {
-                mPlayStacks[i]->takeCard(&card);
-                sStack->addCard(&card);
+                PlayfieldToFoundationCommand *command = new PlayfieldToFoundationCommand(mPlayStacks[i], sStack);
+                mUndoStack.push(command);
                 break;
             }
             // Handle cards moving from one of the main playfield stacks to a different main playfield stack
@@ -383,8 +383,8 @@ void Game::onCardDoubleClicked(Card& card)
                     continue;
                 }
                 if (card.parentItem() == mPlayStacks[i] && mPlayStacks[j]->canAdd(card)) {
-                    mPlayStacks[i]->takeCard(&card);
-                    mPlayStacks[j]->addCard(&card);
+                    PlayfieldToPlayfieldCommand *command = new PlayfieldToPlayfieldCommand(mPlayStacks[i], mPlayStacks[j]);
+                    mUndoStack.push(command);
                     break;
                 }
             }
@@ -483,7 +483,7 @@ void Game::onNewGameClicked()
     }
 
     // Recover the Foundation (Sorted Stacks)
-    CardStack *sStack{nullptr};
+    SortedStack *sStack{nullptr};
 
     for (Suit suit: SuitIterator()) {
         switch(suit) {
