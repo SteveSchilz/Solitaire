@@ -30,6 +30,7 @@ set(PROJECT_SOURCES
         deck.h          deck.cpp
         enumiterator.h
         game.h         game.cpp
+        undocommands.h  undocommands.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

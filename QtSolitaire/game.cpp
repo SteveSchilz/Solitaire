@@ -5,13 +5,15 @@
 #include "clickableitem.h"
 #include "constants.h"
 #include "deck.h"
-#include "myScene.h"
+#include "myscene.h"
+#include "undocommands.h"
 
 #include <QApplication>
 #include <QDebug>
 #include <QGraphicsView>
 #include <QMessageBox>
 #include <QMenuBar>
+#include <QUndoCommand>
 
 const bool showDeck{true};  //< Debug flag to show initial state of deck.
 /**
@@ -43,6 +45,11 @@ Game::Game(QWidget* parent, QMenuBar *menubar)
     createPlayfield(mScene, &mPlayStacks[0]);
     createActions(mScene);
     createMenus();
+
+    QObject::connect(&mUndoStack, &QUndoStack::cleanChanged, this, &Game::onCleanChanged);
+    QObject::connect(&mUndoStack, &QUndoStack::canUndoChanged, this, &Game::onCanUndoChanged);
+    QObject::connect(&mUndoStack, &QUndoStack::canRedoChanged, this, &Game::onCanRedoChanged);
+    onCleanChanged(true);
 }
 
 void Game::showEvent(QShowEvent *event)
@@ -105,7 +112,7 @@ void Game::createHandAndWaste(myScene* scene, RandomStack **hand, RandomStack **
 
     (*hand) = new RandomStack(nullptr);
     (*hand)->setPos(CARD_SPACING+CARD_WIDTH/2, TOP_MARGIN+CARD_HEIGHT/2);
-    QObject::connect( (*hand), &CardStack::clicked, this, &Game::onHandClicked);
+    QObject::connect( (*hand), &CardStack::clicked, this, &Game::onEmptyHandClicked);
 
     scene->addItem( (*hand));
 
@@ -274,7 +281,11 @@ void Game::onUndoAction(bool checked) {
 
 void Game::onUndoClicked()
 {
-    qDebug() << "Undo!";
+    QUndoCommand *undo{nullptr};
+
+    if (mUndoStack.canUndo()) {
+        mUndoStack.undo();
+    }
 }
 
 void Game::onRedoAction(bool checked) {
@@ -284,36 +295,48 @@ void Game::onRedoAction(bool checked) {
 
 void Game::onRedoClicked()
 {
-    qDebug() << "Redo!";
+    if (mUndoStack.canRedo()) {
+        mUndoStack.redo();
+    }
 }
 
-void Game::onHandClicked(CardStack& stack)
-{
-    Card *card{nullptr};
+void Game::onCleanChanged(bool clean) {
 
+    undoAction->setEnabled(mUndoStack.canUndo());
+    redoAction->setEnabled(mUndoStack.canRedo());
+}
+
+void Game::onCanUndoChanged(bool canUndo)
+{
+        undoAction->setEnabled(canUndo);
+}
+void Game::onCanRedoChanged(bool canRedo)
+{
+        redoAction->setEnabled(canRedo);
+}
+
+/**
+ * @brief Game::onEmptyHandClicked -
+ * @param stack
+ */
+void Game::onEmptyHandClicked(CardStack& stack)
+{
     if( !mWastePile || mWastePile->isEmpty()) {
         return;
     }
-    while (!mWastePile->isEmpty()) {
-        card = mWastePile->takeTop();
-        card->setFaceUp(false);
-        mHand->addCard(card);
+    if (&stack == mHand) {
+        mUndoStack.push(new EmptyHandClickCommand(mHand, mWastePile));
     }
-
 }
 
 void Game::onCardClicked(Card& card)
 {
-    Card *topCard{nullptr};
-    qDebug() << "Clicked" << card.getText() << "Parent" << card.parentItem();
+    // Cards on the hand can move to the waste pile
     if (card.parentItem() == mHand) {
-        topCard = mHand->takeTop();
-        topCard->setFaceUp(true);
-        mWastePile->addCard(topCard);
-        if (topCard->getValue() != card.getValue()) {
-            qDebug() << "SOMETHING IS WRONG IN ONCARD CLICKED!";
-        }
+        HandClickCommand *command = new HandClickCommand(mHand, mWastePile);
+        mUndoStack.push(command);
     }
+
 }
 
 void Game::onCardDoubleClicked(Card& card)
@@ -427,9 +450,8 @@ void Game::onDealClicked()
         mHand->addCard(card);        
     }
 
-    // Flip the top card over
+    // Flip the top card over and put it on the waste pile
     card = mHand->takeTop();
-    qDebug() << "Top Card is " << card->getText() << "parent is: " << card->parentItem();
     card->setFaceUp(true);
     mWastePile->addCard(card);
 
@@ -495,6 +517,7 @@ void Game::onNewGameClicked()
     for (int i =0; i < NUM_PLAY_STACKS; ++i) {
         mPlayStacks[i]->newGame();
     }
+    mUndoStack.setClean();
 }
 
 void Game::onExitAction(bool checked) {

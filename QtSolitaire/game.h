@@ -38,7 +38,7 @@ protected:
 private slots:
     void onUndoClicked();
     void onRedoClicked();
-    void onHandClicked(CardStack& stack);
+    void onEmptyHandClicked(CardStack& stack);
     void onCardClicked(Card& card);
     void onCardDoubleClicked(Card& card);
     void onShuffleClicked();
@@ -48,6 +48,10 @@ private slots:
 
     void onUndoAction(bool checked=false);
     void onRedoAction(bool checked=false);
+    void onCleanChanged(bool clean);
+    void onCanUndoChanged(bool canUndo);
+    void onCanRedoChanged(bool canRedo);
+
     void onShuffleAction(bool checked=false);
     void onDealAction(bool checked=false);
     void onNewGameAction(bool checked=false);
