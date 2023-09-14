@@ -92,7 +92,7 @@ void Game::createCards(myScene *scene, Deck *deck) {
             QObject::connect(item, &Card::clicked, this, &Game::onCardClicked);
             QObject::connect(item, &Card::doubleClicked, this, &Game::onCardDoubleClicked);
             scene->addItem(item);
-            deck->addCard(item);
+            deck->addCard(item, false);
         }
     }
 }
@@ -433,9 +433,10 @@ void Game::onDealClicked()
 
     // Deal the cards onto the tableau
     for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
+        mPlayStacks[i]->setTopFlipped(false);
         for (int j = baseStack; j < NUM_PLAY_STACKS; ++j) {
             card = mDeck->deal();
-            mPlayStacks[j]->addCard(card);
+            mPlayStacks[j]->addCard(card, false);
             if (i < j) {
                 card->setFaceUp(false);
            }
@@ -447,13 +448,13 @@ void Game::onDealClicked()
     while (! mDeck->isEmpty()) {
         card = mDeck->deal();
         card->setFaceUp(false);
-        mHand->addCard(card);        
+        mHand->addCard(card, mHand->isTopFlipped());
     }
 
     // Flip the top card over and put it on the waste pile
     card = mHand->takeTop();
     card->setFaceUp(true);
-    mWastePile->addCard(card);
+    mWastePile->addCard(card, false);
 
 }
 
@@ -471,14 +472,14 @@ void Game::onNewGameClicked()
     // Recover cards on the hand
     while (!mHand->isEmpty()) {
         card = mHand->takeTop();
-        mDeck->addCard(card);
+        mDeck->addCard(card, false);
         card->setFaceUp(true);
     }
 
     // Recover cards on the Waste Pile
     while (!mWastePile->isEmpty()) {
         card = mWastePile->takeTop();
-        mDeck->addCard(card);
+        mDeck->addCard(card, false);
         card->setFaceUp(true);
     }
 
@@ -494,7 +495,7 @@ void Game::onNewGameClicked()
         }
         while (!sStack->isEmpty()) {
            card = sStack->takeTop();
-           mDeck->addCard(card);
+           mDeck->addCard(card, false);
            card->setFaceUp(true);
         }
     }
@@ -503,7 +504,7 @@ void Game::onNewGameClicked()
     for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
         while (!mPlayStacks[i]->isEmpty()) {
            card = mPlayStacks[i]->takeTop();
-           mDeck->addCard(card);
+           mDeck->addCard(card, false);
            card->setFaceUp(true);
         }
     }

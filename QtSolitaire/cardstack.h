@@ -32,9 +32,14 @@ public:
     virtual void newGame() = 0;
 
     virtual bool canAdd(Card& card) const = 0;
-    virtual void addCard(Card *card) = 0;
+    virtual void addCard(Card *card, bool flipTop) = 0;
     virtual Card* takeCard(Card *card) = 0;
     virtual Card* takeTop() = 0;
+
+    /* topFlipped property helps with undo - when a card is removed from a stack the topFlipped may be set.
+       when this property is set and an undo command is executed, then we know to flip it back. */
+    virtual bool isTopFlipped() const { return mTopFlipped; }
+    virtual void setTopFlipped(bool flipped) { mTopFlipped = flipped;}
 
     virtual bool isEmpty() const = 0;
 
@@ -59,6 +64,7 @@ protected:
     QColor mColor = Qt::lightGray;
     bool mDragOver = false;
     bool mMouseDown = false;
+    bool mTopFlipped = false;
 };
 
 /*!
@@ -83,7 +89,7 @@ public:
     virtual void newGame() override;
 
     virtual bool canAdd(Card& card) const override;
-    virtual void addCard(Card *card) override;
+    virtual void addCard(Card *card, bool flipTop) override;
     virtual Card* takeCard(Card *card) override;
     virtual Card* takeTop() override;
 
@@ -131,7 +137,7 @@ public:
     virtual void newGame() override;
 
     virtual bool canAdd(Card& card) const override;
-    virtual void addCard(Card *card) override;
+    virtual void addCard(Card *card, bool flipTop) override;
     virtual Card* takeCard(Card *card) override;
     virtual Card* takeTop() override;
     QList<Card*> takeCards(Card& card);
@@ -181,7 +187,7 @@ public:
     virtual void newGame() override;
 
     virtual bool canAdd(Card& card) const override;
-    virtual void addCard(Card *card) override;
+    virtual void addCard(Card *card, bool flipTop) override;
     virtual Card *takeCard(Card *card) override;
     virtual Card *takeTop() override;
 

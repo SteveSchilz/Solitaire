@@ -27,7 +27,7 @@ void HandToWasteCommand::undo() {
     topCard = mWastePile->takeTop();
     qDebug() << "Undo" << text();
     topCard->setFaceUp(false);
-    mHand->addCard(topCard);
+    mHand->addCard(topCard, false);
 }
 
 /**
@@ -52,7 +52,7 @@ void HandToWasteCommand::redo() {
     qDebug() << "Redo " << text();
 
     topCard->setFaceUp(true);
-    mWastePile->addCard(topCard);    
+    mWastePile->addCard(topCard, false);
 }
 
 /******************************************************************************
@@ -82,7 +82,7 @@ void ResetHandCommand::undo() {
     while (!mHand->isEmpty()) {
         card = mHand->takeTop();
         card->setFaceUp(true);             // Ensure new top of stack face down
-        mWastePile->addCard(card);
+        mWastePile->addCard(card, false);
     }
 }
 
@@ -102,7 +102,7 @@ void ResetHandCommand::redo() {
     while (!mWastePile->isEmpty()) {
         card = mWastePile->takeTop();
         card->setFaceUp(false);             // Ensure new top of stack face down
-        mHand->addCard(card);
+        mHand->addCard(card, false);
     }
 }
 
@@ -111,7 +111,8 @@ void ResetHandCommand::redo() {
  * Move to Playfield Undo Command Implementation
  *****************************************************************************/
 MoveToPlayfieldCommand::MoveToPlayfieldCommand(RandomStack *wastePile, DescendingStack *dStack)
-    : mWastePile{wastePile}
+    : mTopFlipped{false}
+    , mWastePile{wastePile}
     , mDStack{dStack}
 {
 }
@@ -132,7 +133,7 @@ void MoveToPlayfieldCommand::undo() {
     }
     qDebug() << "Undo" << text();
     card = mDStack->takeTop();
-    mWastePile->addCard(card);
+    mWastePile->addCard(card, mWastePile->isTopFlipped());
 }
 
 /**
@@ -154,14 +155,15 @@ void MoveToPlayfieldCommand::redo() {
     }
     qDebug() << "Redo " << text();
 
-    mDStack->addCard(card);
+    mDStack->addCard(card, false);
 }
 
 /******************************************************************************
  * Waste Pile to Foundation Command Implementation
  *****************************************************************************/
 WasteToFoundationCommand::WasteToFoundationCommand(RandomStack *wastePile, SortedStack *sStack)
-    : mWastePile{wastePile}
+    : mTopFlipped{false}
+    , mWastePile{wastePile}
     , mSStack{sStack}
 {
 }
@@ -181,7 +183,7 @@ void WasteToFoundationCommand::undo() {
     }
     qDebug() << "Undo" << text();
     card = mSStack->takeTop();
-    mWastePile->addCard(card);
+    mWastePile->addCard(card, mWastePile->isTopFlipped());
 }
 
 /**
@@ -202,14 +204,15 @@ void WasteToFoundationCommand::redo() {
         setText(text);
     }
     qDebug() << "Redo " << text();
-    mSStack->addCard(card);
+    mSStack->addCard(card, false);
 }
 
 /******************************************************************************
  * Playfield to Foundation Command Implementation
  *****************************************************************************/
 PlayfieldToFoundationCommand::PlayfieldToFoundationCommand(DescendingStack *playfield, SortedStack *sStack)
-    : mPlayfieldStack{playfield}
+    : mTopFlipped{false}
+    , mPlayfieldStack{playfield}
     , mSStack{sStack}
 {
 }
@@ -229,7 +232,7 @@ void PlayfieldToFoundationCommand::undo() {
     }
     qDebug() << "Undo" << text();
     card = mSStack->takeTop();
-    mPlayfieldStack->addCard(card);
+    mPlayfieldStack->addCard(card, mPlayfieldStack->isTopFlipped());
 }
 
 /**
@@ -251,14 +254,15 @@ void PlayfieldToFoundationCommand::redo() {
     }
     qDebug() << "Redo " << text();
 
-    mSStack->addCard(card);
+    mSStack->addCard(card, false);
 }
 
 /******************************************************************************
  * Playfield to Playfield Undo Command Implementation
  *****************************************************************************/
 PlayfieldToPlayfieldCommand::PlayfieldToPlayfieldCommand(DescendingStack *playfieldFrom, DescendingStack *playfieldTo)
-    : mPlayfieldFrom{playfieldFrom}
+    : mTopFlipped{false}
+    , mPlayfieldFrom{playfieldFrom}
     , mPlayfieldTo{playfieldTo}
 {
 }
@@ -278,7 +282,10 @@ void PlayfieldToPlayfieldCommand::undo() {
     }
     qDebug() << "Undo" << text();
     card = mPlayfieldTo->takeTop();
-    mPlayfieldFrom->addCard(card);
+
+    if (!mPlayfieldFrom->isEmpty() && mTopFlipped) {
+    }
+    mPlayfieldFrom->addCard(card, mPlayfieldFrom->isTopFlipped());
 }
 
 /**
@@ -297,7 +304,8 @@ void PlayfieldToPlayfieldCommand::redo() {
     if (card && text().isEmpty()) {
         QString text = "Move" + card->getText() + "to foundation";
         setText(text);
+        mTopFlipped = mPlayfieldFrom->isTopFlipped();
     }
     qDebug() << "Redo " << text();
-    mPlayfieldTo->addCard(card);
+    mPlayfieldTo->addCard(card, false);
 }

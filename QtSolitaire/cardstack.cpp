@@ -55,6 +55,7 @@ CardStack::CardStack(QGraphicsItem *parent)
     :QGraphicsObject{parent}
     ,mColor{Qt::lightGray}
     ,mDragOver{false}
+    ,mTopFlipped(false)
 {
     setToolTip(QString("Drop Matching Cards Here\n"));
 
@@ -189,8 +190,11 @@ bool SortedStack::canAdd(Card& card) const
             (testValue == card.getValue()));
 }
 
-void SortedStack::addCard(Card *card) {
+void SortedStack::addCard(Card *card, bool flipTop) {
     if (card) {
+        if (!mCards.empty() && flipTop) {
+            mCards.back()->setFaceUp(!mCards.back()->isFaceUp());
+        }
         mCards.push(card);
         card->setParentItem(this);
         card->setPos(0, 0);
@@ -203,6 +207,7 @@ Card* SortedStack::takeCard(Card *card)
         mCards.pop_back();
         if (!mCards.isEmpty()) {
             mCards.back()->setFaceUp(true);
+            mTopFlipped = true;
         }
         qDebug() << "taking from DescendingStack, new Size = " << mCards.size();
     } else {
@@ -220,6 +225,7 @@ Card* SortedStack::takeTop() {
         card = mCards.pop();
         if (!mCards.isEmpty()) {
             mCards.back()->setFaceUp(true);
+            mTopFlipped = true;
         }
         qDebug() << "taking top Card, new size = ", mCards.size();
     }
@@ -371,9 +377,12 @@ bool DescendingStack::canAdd(Card& card) const
             (testColor != card.getColor()));
 }
 
-void DescendingStack::addCard(Card* card)
+void DescendingStack::addCard(Card* card, bool flipTop)
 {
     if (card) {
+            if (!mCards.empty() && flipTop) {
+                mCards.back()->setFaceUp(!mCards.back()->isFaceUp());
+            }
             mCards.push(card);
             card->setParentItem(this);
             card->setPos(0, getYOffset());
@@ -386,7 +395,8 @@ Card* DescendingStack::takeCard(Card *card)
             if (mCards.back() == card) {
                 mCards.pop_back();
                 if (!mCards.isEmpty()) {
-                mCards.back()->setFaceUp(true);
+                    mCards.back()->setFaceUp(true);
+                    mTopFlipped = true;
                 }
                 qDebug() << "taking from DescendingStack, new Size = " << mCards.size();
             } else {
@@ -405,6 +415,7 @@ Card* DescendingStack::takeTop() {
             card = mCards.pop();
             if (!mCards.isEmpty()) {
                 mCards.back()->setFaceUp(true);
+                mTopFlipped = true;
             }
     }
     return card;
@@ -426,6 +437,7 @@ QList<Card*> DescendingStack::takeCards(Card& card)
     mCards.remove(startIndex, moveCount);
     if (!mCards.empty()) {
         mCards.back()->setFaceUp(true);
+         mTopFlipped = true;
     }
     return result;
 }
@@ -695,9 +707,12 @@ void RandomStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->restore();
 }
 
-void RandomStack::addCard(Card* card)
+void RandomStack::addCard(Card* card, bool flipTop)
 {
     if (card) {
+        if (!mCards.empty() && flipTop) {
+            mCards.back()->setFaceUp(!mCards.back()->isFaceUp());
+        }
         mCards.append(card);
         card->setParentItem(this);
         card->setPos(0,0);
@@ -711,6 +726,7 @@ Card *RandomStack::takeCard(Card *card) {
             mCards.pop_back();
             if (!mCards.isEmpty()) {
                 mCards.back()->setFaceUp(true);
+                mTopFlipped = true;
             }
             qDebug() << "taking from RandomStack, new Size = " << mCards.size();
         } else {

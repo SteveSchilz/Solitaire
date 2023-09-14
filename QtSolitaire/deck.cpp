@@ -35,9 +35,9 @@ void Deck::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     painter->restore();
 }
 
-void Deck::addCard(Card* card)
+void Deck::addCard(Card* card, bool flipTop)
 {
-    RandomStack::addCard(card);
+    RandomStack::addCard(card, flipTop);
     double x = (double)((mCards.size()-1) % 13) * 30.0;
     double y = (double)((mCards.size()-1) / 13) * 30.0;
     card->setPos(x, y);

@@ -48,6 +48,7 @@ public:
     void redo() override;
 
 private:
+    bool mTopFlipped;
     RandomStack *mWastePile;
     DescendingStack *mDStack;
 };
@@ -62,6 +63,7 @@ public:
     void redo() override;
 
 private:
+    bool mTopFlipped;
     RandomStack *mWastePile;
     SortedStack *mSStack;
 };
@@ -75,6 +77,7 @@ public:
     void redo() override;
 
 private:
+    bool mTopFlipped;
     DescendingStack *mPlayfieldStack;
     SortedStack *mSStack;
 };
@@ -89,6 +92,7 @@ public:
     void redo() override;
 
 private:
+    bool mTopFlipped;
     DescendingStack *mPlayfieldFrom;
     DescendingStack *mPlayfieldTo;
 };
