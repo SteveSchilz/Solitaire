@@ -341,18 +341,7 @@ void Game::onCardClicked(Card& card)
 
 void Game::onCardDoubleClicked(Card& card)
 {
-    // Move card from Waste Pile to main playfield
-    if (card.parentItem() == mWastePile) {
-        for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
-            if (mPlayStacks[i]->canAdd(card)) {
-                MoveToPlayfieldCommand *command = new MoveToPlayfieldCommand(mWastePile, mPlayStacks[i]);
-                mUndoStack.push(command);
-                break;
-            }
-        }
-    }
-
-    // Move card from Waste Pile to Sorted Stacks Per-Suit)
+    // Move card from Waste Pile to Foundation (Sorted Stacks Per-Suit)
     SortedStack* sStack{nullptr};
     for (Suit suit: SuitIterator()) {
         switch(suit) {
@@ -366,27 +355,50 @@ void Game::onCardDoubleClicked(Card& card)
             if (card.parentItem() == mWastePile) {
                 WasteToFoundationCommand *command = new WasteToFoundationCommand(mWastePile, sStack);
                 mUndoStack.push(command);
+                return;
             }
         }
+    }
 
-        // Check if card can move from main playfield to the Foundation Piles (Sorted Stacks)
+    // Move card from Waste Pile to main playfield
+    if (card.parentItem() == mWastePile) {
+        for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
+            if (mPlayStacks[i]->canAdd(card)) {
+                MoveToPlayfieldCommand *command = new MoveToPlayfieldCommand(mWastePile, mPlayStacks[i]);
+                mUndoStack.push(command);
+                return;
+            }
+        }
+    }
+
+    // Check if card can move from main playfield to the Foundation Piles (Sorted Stacks)
+    for (Suit suit: SuitIterator()) {
+        switch(suit) {
+        case Suit::HEART: sStack = mHearts; break;
+        case Suit::DIAMOND: sStack = mDiamonds; break;
+        case Suit::CLUB:   sStack = mClubs; break;
+        case Suit::SPADE:  sStack = mSpades; break;
+        }
         for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
             // TODO: Ensure that only top card moves (perhaps add "canTake" method?)
             if (card.parentItem() == mPlayStacks[i] && sStack->canAdd(card)) {
                 PlayfieldToFoundationCommand *command = new PlayfieldToFoundationCommand(mPlayStacks[i], sStack);
                 mUndoStack.push(command);
-                break;
+                return;
             }
-            // Handle cards moving from one of the main playfield stacks to a different main playfield stack
-            for (int j = 0; j < NUM_PLAY_STACKS; ++j) {
-                if (i == j) {
-                    continue;
-                }
-                if (card.parentItem() == mPlayStacks[i] && mPlayStacks[j]->canAdd(card)) {
-                    PlayfieldToPlayfieldCommand *command = new PlayfieldToPlayfieldCommand(mPlayStacks[i], mPlayStacks[j]);
-                    mUndoStack.push(command);
-                    break;
-                }
+        }
+    }
+
+    // Handle cards moving from one of the main playfield stacks to a different main playfield stack
+    for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
+        for (int j = 0; j < NUM_PLAY_STACKS; ++j) {
+            if (i == j) {
+                continue;
+            }
+            if (card.parentItem() == mPlayStacks[i] && mPlayStacks[j]->canAdd(card)) {
+                PlayfieldToPlayfieldCommand *command = new PlayfieldToPlayfieldCommand(mPlayStacks[i], mPlayStacks[j]);
+                mUndoStack.push(command);
+                return;
             }
         }
     }
