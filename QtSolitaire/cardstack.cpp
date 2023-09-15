@@ -312,18 +312,15 @@ void SortedStack::dropEvent(QGraphicsSceneDragDropEvent *event)
             QGraphicsItem *otherStack = droppedCard->parentItem();
             DescendingStack *dStack = dynamic_cast<DescendingStack*>(otherStack);
             if (dStack) {
-                dStack->takeCard(droppedCard);
+                PlayfieldToFoundationCommand *command = new PlayfieldToFoundationCommand(dStack, this);
+                mUndoStack->push(command);
             }
 
             RandomStack *rStack = dynamic_cast<RandomStack*>(otherStack);
             if (rStack) {
-                rStack->takeCard(droppedCard);
+                WasteToFoundationCommand *command = new WasteToFoundationCommand(rStack, this);
+                mUndoStack->push(command);
             }
-
-            mImage->setVisible(false);
-            droppedCard->setPos(QPoint(0,0));
-            droppedCard->setParentItem(this);
-            mCards.push(droppedCard);
             event->setAccepted(true);
             update();
         }
@@ -477,7 +474,6 @@ void DescendingStack::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
     Card *droppedCard{nullptr};
     Card *card{nullptr};
-    QList<Card*> tempCards;
     double yAddress{0.0};
 
     mDragOver = false;
@@ -495,30 +491,20 @@ void DescendingStack::dropEvent(QGraphicsSceneDragDropEvent *event)
 
             DescendingStack *dStack = dynamic_cast<DescendingStack*>(otherStack);
             if (dStack) {
-                tempCards = dStack->takeCards(*droppedCard);
-                while (!tempCards.isEmpty()) {
-                    card = tempCards.takeFirst();
-                    mCards.push_back(card);
-                    card->setParentItem(this);
-                    card->setPos(QPointF(0.0, getYOffset()));
-                    card->update();
-                }
+                DragPlayfieldToPlayfieldCommand * command = new DragPlayfieldToPlayfieldCommand(droppedCard, dStack, this);
+                mUndoStack->push(command);
             }
 
             RandomStack *rStack = dynamic_cast<RandomStack*>(otherStack);
             if (rStack) {
-                rStack->takeCard(droppedCard);
-                mCards.push(droppedCard);
-                droppedCard->setPos(QPointF(0.0, this->getYOffset()));
-                droppedCard->setParentItem(this);
+                DragWasteToPlayfieldCommand *command = new DragWasteToPlayfieldCommand(rStack, this);
+                mUndoStack->push(command);
             }
 
             SortedStack *sStack = dynamic_cast<SortedStack*>(otherStack);
             if (sStack) {
-                sStack->takeCard(droppedCard);
-                mCards.push(droppedCard);
-                droppedCard->setPos(QPointF(0.0, this->getYOffset()));
-                droppedCard->setParentItem(this);
+                DragFoundationToPlayfieldCommand *command = new DragFoundationToPlayfieldCommand(sStack, this);
+                mUndoStack->push(command);
             }
             update();
         } else {

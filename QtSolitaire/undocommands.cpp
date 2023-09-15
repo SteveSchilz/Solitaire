@@ -309,3 +309,190 @@ void PlayfieldToPlayfieldCommand::redo() {
     qDebug() << "Redo " << text();
     mPlayfieldTo->addCard(card, false);
 }
+
+/******************************************************************************
+ * Drag Playfield to Playfield Undo Command Implementation
+ *****************************************************************************/
+DragPlayfieldToPlayfieldCommand::DragPlayfieldToPlayfieldCommand(Card *droppedCard, DescendingStack *playfieldFrom, DescendingStack *playfieldTo)
+    : mTopFlipped{false}
+    , mDroppedCard(droppedCard)
+    , mPlayfieldFrom{playfieldFrom}
+    , mPlayfieldTo{playfieldTo}
+{
+}
+
+/**
+ * @brief Undo Drag move one or more cards from one playfield column to another
+ */
+void DragPlayfieldToPlayfieldCommand::undo() {
+
+    Card *card{nullptr};
+    QList<Card*> tempCards;
+    bool firstCard = true;
+    bool setTopFlipped = false;
+
+    if (!mDroppedCard || !mPlayfieldFrom || !mPlayfieldTo) {
+        qDebug() << "Bad parameter in " << __FUNCTION__;
+        return;
+    }
+    if (mPlayfieldTo->isEmpty()) {
+        return;
+    }
+    qDebug() << "Undo" << text();
+
+    tempCards = mPlayfieldTo->takeCards(*mDroppedCard);
+    while (!tempCards.isEmpty()) {
+        card = tempCards.takeFirst();
+        if (firstCard) {
+            setTopFlipped = mPlayfieldFrom->isTopFlipped();
+            firstCard = false;
+        } else {
+            setTopFlipped = false;
+        }
+
+        mPlayfieldFrom->addCard(card, setTopFlipped);
+        card->update();
+    }
+}
+
+/**
+ * @brief Redo Drag move one or more cards from one playfield column to another
+ */
+void DragPlayfieldToPlayfieldCommand::redo() {
+
+    Card *card{nullptr};
+    QList<Card*> tempCards;
+    int numDragged{0};
+
+    if (!mDroppedCard || !mPlayfieldFrom || !mPlayfieldTo) {
+        qDebug() << "Bad parameter in " << __FUNCTION__;
+        return;
+    }
+
+    tempCards = mPlayfieldFrom->takeCards(*mDroppedCard);
+    while (!tempCards.isEmpty()) {
+        card = tempCards.takeFirst();
+        mPlayfieldTo->addCard(card, false);
+        card->update();
+        numDragged++;
+    }
+    if (text().isEmpty()) {
+        QString text = QString("Drag %1 card%2 starting with %3 to other stack")
+                           .arg(numDragged)
+                           .arg( (numDragged > 1) ? "s" : "")
+                           .arg(mDroppedCard->getText());
+        setText(text);
+        mTopFlipped = mPlayfieldFrom->isTopFlipped();
+    }
+
+    qDebug() << "Redo " << text();
+}
+
+/******************************************************************************
+ * Drag Waste to Playfield Undo Command Implementation
+ *
+ * NOTE: really does not care about top flipped, because the stacks involved
+ *       always have the cards above the movement already face up
+ *****************************************************************************/
+DragWasteToPlayfieldCommand::DragWasteToPlayfieldCommand(RandomStack *wasteFrom, DescendingStack *playfieldTo)
+    : mWasteFrom{wasteFrom}
+    , mPlayfieldTo{playfieldTo}
+{
+}
+
+/**
+ * @brief Undo Drag move one or more cards from one playfield column to another
+ */
+void DragWasteToPlayfieldCommand::undo() {
+
+    Card *card{nullptr};
+
+    if (!mWasteFrom || !mPlayfieldTo) {
+        qDebug() << "Bad parameter in " << __FUNCTION__;
+        return;
+    }
+    if (mPlayfieldTo->isEmpty()) {
+        return;
+    }
+
+    qDebug() << "Undo" << text();
+    card = mPlayfieldTo->takeTop();
+    mWasteFrom->addCard(card, false);
+}
+
+/**
+ * @brief Redo Drag move one or more cards from one playfield column to another
+ */
+void DragWasteToPlayfieldCommand::redo() {
+
+    Card *card{nullptr};
+
+    if (!mWasteFrom || !mPlayfieldTo) {
+        qDebug() << "Bad parameter in " << __FUNCTION__;
+        return;
+    }
+
+    card = mWasteFrom->takeTop();
+    if (text().isEmpty()) {
+        QString text = QString("Drag  %1 to playfield")
+                           .arg(card->getText());
+        setText(text);
+    }
+    mPlayfieldTo->addCard(card, false);
+
+    qDebug() << "Redo " << text();
+}
+
+/******************************************************************************
+ * Drag Playfield to Foundation Undo Command Implementation
+ *****************************************************************************/
+DragFoundationToPlayfieldCommand::DragFoundationToPlayfieldCommand(SortedStack *foundationFrom, DescendingStack *playfieldTo )
+    : mTopFlipped{false}
+    , mFoundationFrom{foundationFrom}
+    , mPlayfieldTo{playfieldTo}
+{
+}
+
+/**
+ * @brief Undo click to move single card from one playfield column to another
+ */
+void DragFoundationToPlayfieldCommand::undo() {
+
+    Card *card{nullptr};
+
+    if (!mPlayfieldTo|| !mFoundationFrom) {
+        qDebug() << "Bad parameter in " << __FUNCTION__;
+        return;
+    }
+    if (mPlayfieldTo->isEmpty()) {
+        return;
+    }
+    qDebug() << "Undo" << text();
+    card = mPlayfieldTo->takeTop();
+    mFoundationFrom->addCard(card, mTopFlipped);
+}
+
+/**
+ * @brief Redo click to move single card from one playfield column to another
+ */
+void DragFoundationToPlayfieldCommand::redo() {
+
+    Card *card{nullptr};
+
+    if (!mPlayfieldTo || !mFoundationFrom) {
+        qDebug() << "Bad parameter in " << __FUNCTION__;
+        return;
+    }
+
+    card = mFoundationFrom->takeTop();
+    if (card && text().isEmpty()) {
+        QString text = "Drag " + card->getText() + " from foundation to playfield";
+        setText(text);
+        if (!mPlayfieldTo->isEmpty()) {
+            mTopFlipped = mPlayfieldTo->isTopFlipped();
+        }
+    }
+    qDebug() << "Redo " << text();
+    mPlayfieldTo->addCard(card, false);
+}
+
