@@ -210,6 +210,8 @@ Card* SortedStack::takeCard(Card *card)
         if (!mCards.isEmpty()) {
             mCards.back()->setFaceUp(true);
             mTopFlipped = true;
+        } else {
+            mTopFlipped = false;
         }
         qDebug() << "taking from DescendingStack, new Size = " << mCards.size();
     }
@@ -225,6 +227,8 @@ Card* SortedStack::takeTop() {
         if (!mCards.isEmpty()) {
             mCards.back()->setFaceUp(true);
             mTopFlipped = true;
+        } else {
+            mTopFlipped = false;
         }
         qDebug() << "taking top Card, new size = ", mCards.size();
     }
@@ -396,6 +400,8 @@ Card* DescendingStack::takeCard(Card *card)
                 if (!mCards.isEmpty()) {
                     mCards.back()->setFaceUp(true);
                     mTopFlipped = true;
+                } else {
+                    mTopFlipped = false;
                 }
                 qDebug() << "taking from DescendingStack, new Size = " << mCards.size();
             }
@@ -412,6 +418,8 @@ Card* DescendingStack::takeTop() {
             if (!mCards.isEmpty()) {
                 mCards.back()->setFaceUp(true);
                 mTopFlipped = true;
+            } else {
+                mTopFlipped = false;
             }
     }
     return card;
@@ -434,6 +442,8 @@ QList<Card*> DescendingStack::takeCards(Card& card)
     if (!mCards.empty()) {
         mCards.back()->setFaceUp(true);
          mTopFlipped = true;
+    } else {
+         mTopFlipped = false;
     }
     return result;
 }
@@ -723,6 +733,8 @@ Card *RandomStack::takeCard(Card *card) {
             if (!mCards.isEmpty()) {
                 mCards.back()->setFaceUp(true);
                 mTopFlipped = true;
+            } else {
+                mTopFlipped = false;
             }
             qDebug() << "taking from RandomStack, new Size = " << mCards.size();
         }
