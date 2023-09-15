@@ -31,9 +31,11 @@ Game::Game(QWidget* parent, QMenuBar *menubar)
     , mDiamonds{nullptr}
     , mSpades{nullptr}
     , mClubs{nullptr}
-    , mUndoStack{}
+    , mUndoStack{nullptr}
     , mMenuBar{menubar}
 {
+    mUndoStack = QSharedPointer<QUndoStack>(new QUndoStack(), &QObject::deleteLater);
+
     mScene = new  myScene(0, 0, GAME_WIDTH, GAME_HEIGHT, parent);
     mScene->setSceneRect(QRectF(0, 0, GAME_WIDTH, GAME_HEIGHT));
     this->setScene(mScene);
@@ -46,9 +48,9 @@ Game::Game(QWidget* parent, QMenuBar *menubar)
     createActions(mScene);
     createMenus();
 
-    QObject::connect(&mUndoStack, &QUndoStack::cleanChanged, this, &Game::onCleanChanged);
-    QObject::connect(&mUndoStack, &QUndoStack::canUndoChanged, this, &Game::onCanUndoChanged);
-    QObject::connect(&mUndoStack, &QUndoStack::canRedoChanged, this, &Game::onCanRedoChanged);
+    QObject::connect(mUndoStack.data(), &QUndoStack::cleanChanged, this, &Game::onCleanChanged);
+    QObject::connect(mUndoStack.data(), &QUndoStack::canUndoChanged, this, &Game::onCanUndoChanged);
+    QObject::connect(mUndoStack.data(), &QUndoStack::canRedoChanged, this, &Game::onCanRedoChanged);
     onCleanChanged(true);
 }
 
@@ -110,13 +112,13 @@ void Game::createHandAndWaste(myScene* scene, RandomStack **hand, RandomStack **
         return;
     }
 
-    (*hand) = new RandomStack(nullptr);
+    (*hand) = new RandomStack(nullptr, mUndoStack.data());
     (*hand)->setPos(CARD_SPACING+CARD_WIDTH/2, TOP_MARGIN+CARD_HEIGHT/2);
     QObject::connect( (*hand), &CardStack::clicked, this, &Game::onEmptyHandClicked);
 
     scene->addItem( (*hand));
 
-    (*wastePile) = new RandomStack(nullptr);
+    (*wastePile) = new RandomStack(nullptr, mUndoStack.data());
     (*wastePile)->setPos(2*CARD_SPACING+ 3*CARD_WIDTH/2, TOP_MARGIN+CARD_HEIGHT/2);
     scene->addItem((*wastePile));
 }
@@ -135,7 +137,7 @@ void Game::createFoundation(myScene *scene, SortedStack **hearts, SortedStack **
     }
 
     for (Suit suit: SuitIterator()) {
-        SortedStack *stack = new SortedStack(suit, nullptr);
+        SortedStack *stack = new SortedStack(suit, nullptr, mUndoStack.data());
         stack->setPos(4*CARD_SPACING+3*CARD_WIDTH + CARD_WIDTH/2 + (double)suit*(CARD_WIDTH+CARD_SPACING), TOP_MARGIN+CARD_HEIGHT/2);
         stack->setTransform(QTransform::fromScale(1.0, 1.0), true);
         scene->addItem(stack);
@@ -160,7 +162,7 @@ void Game::createPlayfield(myScene *scene, pDStackArray stacks){
     }
 
     for (int i = 0; i < NUM_PLAY_STACKS; i++) {
-        stacks[i] = new DescendingStack(nullptr);
+        stacks[i] = new DescendingStack(nullptr, mUndoStack.data());
         stacks[i]->setPos(CARD_SPACING + CARD_WIDTH/2 + (double)i*(CARD_WIDTH+CARD_SPACING), +TOP_MARGIN+ 3*CARD_HEIGHT/2 + CARD_SPACING);
         scene->addItem(mPlayStacks[i]);
     }
@@ -283,8 +285,8 @@ void Game::onUndoClicked()
 {
     QUndoCommand *undo{nullptr};
 
-    if (mUndoStack.canUndo()) {
-        mUndoStack.undo();
+    if (mUndoStack->canUndo()) {
+        mUndoStack->undo();
     }
 }
 
@@ -295,15 +297,15 @@ void Game::onRedoAction(bool checked) {
 
 void Game::onRedoClicked()
 {
-    if (mUndoStack.canRedo()) {
-        mUndoStack.redo();
+    if (mUndoStack->canRedo()) {
+        mUndoStack->redo();
     }
 }
 
 void Game::onCleanChanged(bool clean) {
 
-    undoAction->setEnabled(mUndoStack.canUndo());
-    redoAction->setEnabled(mUndoStack.canRedo());
+    undoAction->setEnabled(mUndoStack->canUndo());
+    redoAction->setEnabled(mUndoStack->canRedo());
 }
 
 void Game::onCanUndoChanged(bool canUndo)
@@ -325,7 +327,7 @@ void Game::onEmptyHandClicked(CardStack& stack)
         return;
     }
     if (&stack == mHand) {
-        mUndoStack.push(new ResetHandCommand(mHand, mWastePile));
+        mUndoStack->push(new ResetHandCommand(mHand, mWastePile));
     }
 }
 
@@ -334,7 +336,7 @@ void Game::onCardClicked(Card& card)
     // Cards on the hand can move to the waste pile
     if (card.parentItem() == mHand) {
         HandToWasteCommand *command = new HandToWasteCommand(mHand, mWastePile);
-        mUndoStack.push(command);
+        mUndoStack->push(command);
     }
 
 }
@@ -354,7 +356,7 @@ void Game::onCardDoubleClicked(Card& card)
         if (sStack->canAdd(card)) {
             if (card.parentItem() == mWastePile) {
                 WasteToFoundationCommand *command = new WasteToFoundationCommand(mWastePile, sStack);
-                mUndoStack.push(command);
+                mUndoStack->push(command);
                 return;
             }
         }
@@ -365,7 +367,7 @@ void Game::onCardDoubleClicked(Card& card)
         for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
             if (mPlayStacks[i]->canAdd(card)) {
                 MoveToPlayfieldCommand *command = new MoveToPlayfieldCommand(mWastePile, mPlayStacks[i]);
-                mUndoStack.push(command);
+                mUndoStack->push(command);
                 return;
             }
         }
@@ -383,7 +385,7 @@ void Game::onCardDoubleClicked(Card& card)
             // TODO: Ensure that only top card moves (perhaps add "canTake" method?)
             if (card.parentItem() == mPlayStacks[i] && sStack->canAdd(card)) {
                 PlayfieldToFoundationCommand *command = new PlayfieldToFoundationCommand(mPlayStacks[i], sStack);
-                mUndoStack.push(command);
+                mUndoStack->push(command);
                 return;
             }
         }
@@ -397,7 +399,7 @@ void Game::onCardDoubleClicked(Card& card)
             }
             if (card.parentItem() == mPlayStacks[i] && mPlayStacks[j]->canAdd(card)) {
                 PlayfieldToPlayfieldCommand *command = new PlayfieldToPlayfieldCommand(mPlayStacks[i], mPlayStacks[j]);
-                mUndoStack.push(command);
+                mUndoStack->push(command);
                 return;
             }
         }
@@ -530,7 +532,7 @@ void Game::onNewGameClicked()
     for (int i =0; i < NUM_PLAY_STACKS; ++i) {
         mPlayStacks[i]->newGame();
     }
-    mUndoStack.setClean();
+    mUndoStack->setClean();
 }
 
 void Game::onExitAction(bool checked) {

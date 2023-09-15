@@ -5,6 +5,7 @@
 #include <QGraphicsObject>
 #include <QObject>
 
+QT_FORWARD_DECLARE_CLASS(QUndoStack);
 /**
  * @brief The Deck class is an adaption of RandomStack used to temporarily hold the cards when shuffling the deck and dealing.
  *
@@ -15,7 +16,7 @@ class Deck : public RandomStack
 public:
 
     Deck() = delete;
-    Deck(bool showDeck, QGraphicsItem *parent = nullptr);
+    Deck(bool showDeck, QGraphicsItem *parent = nullptr, QUndoStack *undoStack = nullptr);
     ~Deck();
 
     QRectF boundingRect() const override;

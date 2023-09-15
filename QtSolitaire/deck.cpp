@@ -6,8 +6,8 @@
 #include <algorithm>
 #include <random>
 
-Deck::Deck(bool showDeck, QGraphicsItem *parent)
-    :RandomStack(parent)
+Deck::Deck(bool showDeck, QGraphicsItem *parent, QUndoStack *undoStack)
+    :RandomStack(parent, undoStack)
     ,mShowDeck(showDeck)
 {
 

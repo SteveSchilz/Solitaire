@@ -1,5 +1,6 @@
 #include "cardstack.h"
 #include "constants.h"
+#include "undocommands.h"
 
 #include <QPainter>
 #include <QCursor>
@@ -51,11 +52,12 @@ QPointF getFanLocation(int i, int n, FanDirection f, QRect fanRegion ) {
 /******************************************************************************
  * CardStack Implementation
  *****************************************************************************/
-CardStack::CardStack(QGraphicsItem *parent)
+CardStack::CardStack(QGraphicsItem *parent, QUndoStack *undoStack)
     :QGraphicsObject{parent}
     ,mColor{Qt::lightGray}
     ,mDragOver{false}
     ,mTopFlipped(false)
+    ,mUndoStack(undoStack, &QObject::deleteLater)
 {
     setToolTip(QString("Drop Matching Cards Here\n"));
 
@@ -155,8 +157,8 @@ void CardStack::dropEvent(QGraphicsSceneDragDropEvent *event)
 /******************************************************************************
  * SortedStack Implementation
  *****************************************************************************/
-SortedStack::SortedStack(Suit s, QGraphicsItem *parent)
-    : CardStack(parent)
+SortedStack::SortedStack(Suit s, QGraphicsItem *parent, QUndoStack *undoStack)
+    : CardStack(parent, undoStack)
     , mSuit{s}
 {
     const char *imgPath = getImagePath(s);
@@ -344,8 +346,8 @@ const char *SortedStack::getImagePath(Suit s)
 /******************************************************************************
  * DescendingStack Implementation
  *****************************************************************************/
-DescendingStack::DescendingStack(QGraphicsItem *parent)
-    : CardStack(parent)
+DescendingStack::DescendingStack(QGraphicsItem *parent, QUndoStack *undoStack)
+    : CardStack(parent, undoStack)
 {
 
 }
@@ -585,8 +587,8 @@ void DescendingStack::onUpdateState(QAbstractAnimation::State newState, QAbstrac
 /******************************************************************************
  * RandomStack Implementation
  *****************************************************************************/
-RandomStack::RandomStack(QGraphicsItem *parent)
-    : CardStack(parent)
+RandomStack::RandomStack(QGraphicsItem *parent, QUndoStack *undoStack)
+    : CardStack(parent, undoStack)
 {
 }
 

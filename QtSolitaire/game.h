@@ -6,6 +6,7 @@
 #include "constants.h"
 
 #include <QGraphicsView>
+#include <QSharedPointer>
 #include <QUndoStack>
 
 // Forward Declarations
@@ -79,7 +80,7 @@ private:
     QAction *exitAction;
     QMenuBar *mMenuBar;
 
-    QUndoStack mUndoStack;
+    QSharedPointer<QUndoStack>mUndoStack;
 };
 
 #endif // GAME_H

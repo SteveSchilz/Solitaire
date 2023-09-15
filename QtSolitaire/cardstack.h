@@ -6,9 +6,11 @@
 #include <QAbstractAnimation>
 #include <QObject>
 #include <QGraphicsItem>
+#include <QSharedPointer>
 #include <QStack>
 
 QT_FORWARD_DECLARE_CLASS(QGraphicsSvgItem)
+QT_FORWARD_DECLARE_CLASS(QUndoStack)
 
 /**
  * @brief The FanDirection enum selects a direction when laying out the cards
@@ -26,7 +28,7 @@ class CardStack : public QGraphicsObject
 public:
 
     CardStack() = delete;
-    CardStack(QGraphicsItem *parent = nullptr);
+    CardStack(QGraphicsItem *parent = nullptr, QUndoStack *undoStack  = nullptr);
     ~CardStack();
 
     virtual void newGame() = 0;
@@ -65,6 +67,7 @@ protected:
     bool mDragOver = false;
     bool mMouseDown = false;
     bool mTopFlipped = false;
+    QSharedPointer <QUndoStack>mUndoStack;
 };
 
 /*!
@@ -83,7 +86,7 @@ class SortedStack: public CardStack {
 public:
 
     SortedStack() = delete;
-    SortedStack(Suit s, QGraphicsItem *parent = nullptr);
+    SortedStack(Suit s, QGraphicsItem *parent = nullptr, QUndoStack *undoStack  = nullptr);
     ~SortedStack();
 
     virtual void newGame() override;
@@ -131,7 +134,7 @@ public:
     DescendingStack() = delete;
     DescendingStack(DescendingStack&) = delete;
 
-    DescendingStack(QGraphicsItem *parent = nullptr);
+    DescendingStack(QGraphicsItem *parent = nullptr, QUndoStack *undoStack  = nullptr);
     ~DescendingStack();
 
     virtual void newGame() override;
@@ -181,7 +184,7 @@ public:
     RandomStack() = delete;
     RandomStack(RandomStack&) = delete;
 
-    RandomStack(QGraphicsItem *parent = nullptr);
+    RandomStack(QGraphicsItem *parent = nullptr, QUndoStack *undoStack  = nullptr);
     ~RandomStack();
 
     virtual void newGame() override;
