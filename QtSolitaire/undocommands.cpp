@@ -45,7 +45,7 @@ void HandToWasteCommand::redo() {
     }
     topCard = mHand->takeTop();
     if (this->text().isEmpty()) {
-        QString text = "Moved " + topCard->getText() + "to Waste Pile";
+        QString text = "Move " + topCard->getText() + " to Waste Pile";
         this->setText(text);
     }
 
@@ -150,7 +150,7 @@ void MoveToPlayfieldCommand::redo() {
 
     card = mWastePile->takeTop();
     if (card && text().isEmpty()) {
-        QString text = "Move " + card->getText() + "to playfield";
+        QString text = "Move " + card->getText() + " to playfield";
         setText(text);
     }
     qDebug() << "Redo " << text();
@@ -200,7 +200,7 @@ void WasteToFoundationCommand::redo() {
 
     card = mWastePile->takeTop();
     if (card && text().isEmpty()) {
-        QString text = "Move" + card->getText() + "to foundation";
+        QString text = "Move " + card->getText() + " to foundation";
         setText(text);
     }
     qDebug() << "Redo " << text();
@@ -249,7 +249,7 @@ void PlayfieldToFoundationCommand::redo() {
 
     card = mPlayfieldStack->takeTop();
     if (card && text().isEmpty()) {
-        QString text = "Move" + card->getText() + "to foundation";
+        QString text = "Move " + card->getText() + " to foundation";
         setText(text);
     }
     qDebug() << "Redo " << text();
@@ -302,7 +302,7 @@ void PlayfieldToPlayfieldCommand::redo() {
 
     card = mPlayfieldFrom->takeTop();
     if (card && text().isEmpty()) {
-        QString text = "Move" + card->getText() + "to foundation";
+        QString text = "Move " + card->getText() + " to foundation";
         setText(text);
         mTopFlipped = mPlayfieldFrom->isTopFlipped();
     }
