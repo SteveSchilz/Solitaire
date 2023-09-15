@@ -212,9 +212,6 @@ Card* SortedStack::takeCard(Card *card)
             mTopFlipped = true;
         }
         qDebug() << "taking from DescendingStack, new Size = " << mCards.size();
-    } else {
-        mCards.removeOne(card);
-        qDebug() << "taking from not back!, new size = " << mCards.size();
     }
     return card;
 }
@@ -401,9 +398,6 @@ Card* DescendingStack::takeCard(Card *card)
                     mTopFlipped = true;
                 }
                 qDebug() << "taking from DescendingStack, new Size = " << mCards.size();
-            } else {
-                mCards.removeOne(card);
-                qDebug() << "Taking from not back!, new Size =" << mCards.size();
             }
     }
     return card;
@@ -731,9 +725,6 @@ Card *RandomStack::takeCard(Card *card) {
                 mTopFlipped = true;
             }
             qDebug() << "taking from RandomStack, new Size = " << mCards.size();
-        } else {
-            mCards.removeOne(card);
-            qDebug() << "taking from not back, new Size = " << mCards.size();
         }
     }
     return card;
