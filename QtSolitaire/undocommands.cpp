@@ -232,7 +232,7 @@ void PlayfieldToFoundationCommand::undo() {
     }
     qDebug() << "Undo" << text();
     card = mSStack->takeTop();
-    mPlayfieldStack->addCard(card, mPlayfieldStack->isTopFlipped());
+    mPlayfieldStack->addCard(card, mTopFlipped);
 }
 
 /**
@@ -251,6 +251,7 @@ void PlayfieldToFoundationCommand::redo() {
     if (card && text().isEmpty()) {
         QString text = "Move " + card->getText() + " to foundation";
         setText(text);
+        mTopFlipped = mPlayfieldStack->isTopFlipped();
     }
     qDebug() << "Redo " << text();
 
@@ -285,7 +286,7 @@ void PlayfieldToPlayfieldCommand::undo() {
 
     if (!mPlayfieldFrom->isEmpty() && mTopFlipped) {
     }
-    mPlayfieldFrom->addCard(card, mPlayfieldFrom->isTopFlipped());
+    mPlayfieldFrom->addCard(card, mTopFlipped);
 }
 
 /**
@@ -302,7 +303,7 @@ void PlayfieldToPlayfieldCommand::redo() {
 
     card = mPlayfieldFrom->takeTop();
     if (card && text().isEmpty()) {
-        QString text = "Move " + card->getText() + " to foundation";
+        QString text = "Move " + card->getText() + " from stack to stack";
         setText(text);
         mTopFlipped = mPlayfieldFrom->isTopFlipped();
     }
@@ -329,7 +330,6 @@ void DragPlayfieldToPlayfieldCommand::undo() {
     Card *card{nullptr};
     QList<Card*> tempCards;
     bool firstCard = true;
-    bool setTopFlipped = false;
 
     if (!mDroppedCard || !mPlayfieldFrom || !mPlayfieldTo) {
         qDebug() << "Bad parameter in " << __FUNCTION__;
@@ -343,14 +343,13 @@ void DragPlayfieldToPlayfieldCommand::undo() {
     tempCards = mPlayfieldTo->takeCards(*mDroppedCard);
     while (!tempCards.isEmpty()) {
         card = tempCards.takeFirst();
-        if (firstCard) {
-            setTopFlipped = mPlayfieldFrom->isTopFlipped();
-            firstCard = false;
-        } else {
-            setTopFlipped = false;
-        }
 
-        mPlayfieldFrom->addCard(card, setTopFlipped);
+        if (firstCard) {
+            firstCard = false;
+            mPlayfieldFrom->addCard(card, mTopFlipped);
+        } else {
+            mPlayfieldFrom->addCard(card, false);
+        }
         card->update();
     }
 }

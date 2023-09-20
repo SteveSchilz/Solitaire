@@ -21,6 +21,7 @@ public:
     void redo() override;
 
 private:
+    bool mTopFlipped;
     RandomStack *mHand;
     RandomStack *mWastePile;
 };
@@ -139,21 +140,5 @@ private:
     DescendingStack *mPlayfieldTo;
     SortedStack *mFoundationFrom;
 };
-
-#if 0
-class DragPlayfieldToFoundation : public QUndoCommand
-{
-public:
-    DragPlayfieldToFoundation(DescendingStack *playfieldFrom, SortedStack *foundationTo);
-
-    void undo() override;
-    void redo() override;
-
-private:
-    bool mTopFlipped;
-    DescendingStack *mPlayfieldFrom;
-    SortedStack *mFoundationTo;
-};
-#endif //0
 
 #endif // CARDUNDOCOMMAND_H
