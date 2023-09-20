@@ -34,17 +34,18 @@ public:
     virtual void newGame() = 0;
 
     virtual bool canAdd(Card& card) const = 0;
-    virtual bool canTake(Card& card) const = 0;
-    virtual void addCard(Card *card, bool flipTop) = 0;
-    virtual Card* takeCard(Card *card) = 0;
-    virtual Card* takeTop() = 0;
+    virtual void addCard(Card *card, bool flipTop);
+
+    bool canTake(Card& card) const;
+    virtual Card* takeCard(Card *card);
+    virtual Card* takeTop();
 
     /* topFlipped property helps with undo - when a card is removed from a stack the topFlipped may be set.
        when this property is set and an undo command is executed, then we know to flip it back. */
     virtual bool isTopFlipped() const { return mTopFlipped; }
     virtual void setTopFlipped(bool flipped) { mTopFlipped = flipped;}
 
-    virtual bool isEmpty() const = 0;
+    bool isEmpty() { return mCards.isEmpty(); }
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
@@ -64,11 +65,12 @@ protected:
     void dragLeaveEvent(QGraphicsSceneDragDropEvent *event) override;
     void dropEvent(QGraphicsSceneDragDropEvent *event) override;
 
-    QColor mColor = Qt::lightGray;
-    bool mDragOver = false;
-    bool mMouseDown = false;
-    bool mTopFlipped = false;
+    QColor mColor;
+    bool mDragOver;
+    bool mMouseDown;
+    bool mTopFlipped;
     QSharedPointer <QUndoStack>mUndoStack;
+    QList<Card*> mCards;
 };
 
 /*!
@@ -93,12 +95,7 @@ public:
     virtual void newGame() override;
 
     virtual bool canAdd(Card& card) const override;
-    virtual bool canTake(Card& card) const override;
     virtual void addCard(Card *card, bool flipTop) override;
-    virtual Card* takeCard(Card *card) override;
-    virtual Card* takeTop() override;
-
-    virtual bool isEmpty() const override { return mCards.isEmpty(); }
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
@@ -113,7 +110,6 @@ protected slots:
 private:
     const char *getImagePath(Suit s);
 
-    QStack<Card*> mCards;
     Suit mSuit;
     QGraphicsSvgItem *mImage;
 };
@@ -142,15 +138,12 @@ public:
     virtual void newGame() override;
 
     virtual bool canAdd(Card& card) const override;
-    virtual bool canTake(Card& card) const override;
     virtual void addCard(Card *card, bool flipTop) override;
-    virtual Card* takeCard(Card *card) override;
     virtual Card* takeTop() override;
     QList<Card*> takeCards(Card& card);
 
     double getYOffset() const;
 
-    virtual bool isEmpty() const override { return mCards.isEmpty(); }
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
@@ -164,8 +157,6 @@ protected slots:
     void onUpdateState(QAbstractAnimation::State newState, QAbstractAnimation::State oldState);
 
 protected:
-
-    QStack<Card*> mCards;
 
 };
 
@@ -193,13 +184,8 @@ public:
     virtual void newGame() override;
 
     virtual bool canAdd(Card& card) const override;
-    virtual bool canTake(Card& card) const override;
 
     virtual void addCard(Card *card, bool flipTop) override;
-    virtual Card *takeCard(Card *card) override;
-    virtual Card *takeTop() override;
-
-    virtual bool isEmpty() const override { return mCards.isEmpty(); }
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
@@ -210,7 +196,6 @@ protected slots:
     void onUpdateState(QAbstractAnimation::State newState, QAbstractAnimation::State oldState);
 
 protected:
-    QList<Card*> mCards;
 };
 
 #endif // CARDSTACK_H

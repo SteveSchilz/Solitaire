@@ -56,8 +56,10 @@ CardStack::CardStack(QGraphicsItem *parent, QUndoStack *undoStack)
     :QGraphicsObject{parent}
     ,mColor{Qt::lightGray}
     ,mDragOver{false}
-    ,mTopFlipped(false)
-    ,mUndoStack(undoStack, &QObject::deleteLater)
+    ,mMouseDown{false}
+    ,mTopFlipped{false}
+    ,mUndoStack{undoStack, &QObject::deleteLater}
+    ,mCards{}
 {
     setToolTip(QString("Drop Matching Cards Here\n"));
 
@@ -76,6 +78,40 @@ CardStack::~CardStack() {
     }
 }
 
+void CardStack::addCard(Card *card, bool flipTop)
+{
+    if (card) {
+        if (!mCards.empty() && flipTop) {
+            mCards.back()->setFaceUp(!mCards.back()->isFaceUp());
+        }
+        mCards.push_back(card);
+        card->setParentItem(this);
+    }
+}
+
+bool CardStack::canTake(Card& card) const
+{
+    return ((mCards.size() > 0) && (&card == mCards.back()));
+}
+
+Card *CardStack::takeCard(Card *card) {
+
+    if (!mCards.isEmpty()) {
+        if (mCards.back() == card) {
+            mCards.pop_back();
+        }
+    }
+    return card;
+}
+
+Card* CardStack::takeTop()
+{
+    Card *card = {nullptr};
+    if (!mCards.isEmpty()) {
+        card = mCards.takeLast();
+    }
+    return card;
+}
 
 QRectF CardStack::boundingRect() const
 {
@@ -127,7 +163,6 @@ void CardStack::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsItem::mouseReleaseEvent(event);
 
 }
-
 
 void CardStack::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
 {
@@ -186,58 +221,18 @@ void SortedStack::newGame()
 bool SortedStack::canAdd(Card& card) const
 {
     // TODO: ugly casting to get next value of class enum!
-    CardValue testValue = mCards.size() == 0 ? CardValue::ACE : static_cast<CardValue>((int)mCards.top()->getValue() +1);
+    CardValue testValue = mCards.size() == 0 ? CardValue::ACE : static_cast<CardValue>((int)mCards.back()->getValue() +1);
     
     return ((mSuit == card.getSuit()) &&
             (testValue == card.getValue()));
 }
 
-bool SortedStack::canTake(Card& card) const
+void SortedStack::addCard(Card *card, bool flipTop)
 {
-    return ((mCards.size() > 0) && (&card == mCards.top()));
-}
-
-void SortedStack::addCard(Card *card, bool flipTop) {
     if (card) {
-        if (!mCards.empty() && flipTop) {
-            mCards.back()->setFaceUp(!mCards.back()->isFaceUp());
-        }
-        mCards.push(card);
-        card->setParentItem(this);
+        CardStack::addCard(card, flipTop);
         card->setPos(0, 0);
     }
-}
-
-Card* SortedStack::takeCard(Card *card)
-{
-    if (!mCards.isEmpty() && mCards.back() == card) {
-        mCards.pop_back();
-        if (!mCards.isEmpty()) {
-            mCards.back()->setFaceUp(true);
-            mTopFlipped = true;
-        } else {
-            mTopFlipped = false;
-        }
-        qDebug() << "taking from DescendingStack, new Size = " << mCards.size();
-    }
-    return card;
-}
-
-Card* SortedStack::takeTop() {
-
-    Card *card = {nullptr};
-
-    if (!mCards.isEmpty()) {
-        card = mCards.pop();
-        if (!mCards.isEmpty()) {
-            mCards.back()->setFaceUp(true);
-            mTopFlipped = true;
-        } else {
-            mTopFlipped = false;
-        }
-        qDebug() << "taking top Card, new size = ", mCards.size();
-    }
-    return card;
 }
 
 void SortedStack::fanCards(FanDirection dir)
@@ -371,63 +366,41 @@ bool DescendingStack::canAdd(Card& card) const
 
     // TODO: ugly casting to get next value of class enum!
     if (!mCards.isEmpty()) {
-            if (mCards.top()->getValue() == CardValue::ACE) {
+            if (mCards.back()->getValue() == CardValue::ACE) {
                 return false;
             } else {
-                testValue = static_cast<CardValue>((int)mCards.top()->getValue() - 1);
-                testColor = mCards.top()->getColor();
+                testValue = static_cast<CardValue>((int)mCards.back()->getValue() - 1);
+                testColor = mCards.back()->getColor();
             }
     }
     return ((testValue == card.getValue()) &&
             (testColor != card.getColor()));
 }
 
-bool DescendingStack::canTake(Card& card) const
-{
-    return ((mCards.size() > 0) && (&card == mCards.top()));
-}
-
 void DescendingStack::addCard(Card* card, bool flipTop)
 {
     if (card) {
-            if (!mCards.empty() && flipTop) {
-                mCards.back()->setFaceUp(!mCards.back()->isFaceUp());
-            }
-            mCards.push(card);
-            card->setParentItem(this);
+            CardStack::addCard(card, flipTop);
             card->setPos(0, getYOffset());
     }
 }
-
-Card* DescendingStack::takeCard(Card *card)
+/**
+ * @brief DescendingStack::takeTop
+ *
+ * Descending Stack is different from the others because it may or may not
+ * need to flip over the next card.  This is important for the undo commands.
+ *
+ *  @return top card from the stack or null if stack is empty.
+ */
+Card* DescendingStack::takeTop()
 {
-    if (!mCards.isEmpty()) {
-            if (mCards.back() == card) {
-                mCards.pop_back();
-                if (!mCards.isEmpty()) {
-                    mCards.back()->setFaceUp(true);
-                    mTopFlipped = true;
-                } else {
-                    mTopFlipped = false;
-                }
-                qDebug() << "taking from DescendingStack, new Size = " << mCards.size();
-            }
-    }
-    return card;
-}
+    Card *card = CardStack::takeTop();
 
-Card* DescendingStack::takeTop() {
-
-    Card *card = {nullptr};
-
-    if (!mCards.isEmpty()) {
-            card = mCards.pop();
-            if (!mCards.isEmpty()) {
-                mCards.back()->setFaceUp(true);
-                mTopFlipped = true;
-            } else {
-                mTopFlipped = false;
-            }
+    if (card && !mCards.isEmpty() && !mCards.back()->isFaceUp()) {
+        mCards.back()->setFaceUp(true);
+        mTopFlipped = true;
+    } else {
+        mTopFlipped = false;
     }
     return card;
 }
@@ -446,7 +419,7 @@ QList<Card*> DescendingStack::takeCards(Card& card)
     moveCount = mCards.size()-startIndex;
     result = mCards.mid(startIndex, moveCount);
     mCards.remove(startIndex, moveCount);
-    if (!mCards.empty()) {
+    if (!mCards.empty() && !mCards.back()->isFaceUp()) {
         mCards.back()->setFaceUp(true);
          mTopFlipped = true;
     } else {
@@ -606,11 +579,6 @@ bool RandomStack::canAdd(Card& card) const
     return false;
 }
 
-bool RandomStack::canTake(Card& card) const
-{
-    return ((mCards.size() > 0) && (&card == mCards.back()));
-}
-
 //TODO: QParallelAnimationGroup is not working!  WTH!
 static bool useGroup = false;
 
@@ -717,38 +685,7 @@ void RandomStack::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 void RandomStack::addCard(Card* card, bool flipTop)
 {
     if (card) {
-        if (!mCards.empty() && flipTop) {
-            mCards.back()->setFaceUp(!mCards.back()->isFaceUp());
-        }
-        mCards.append(card);
-        card->setParentItem(this);
+        CardStack::addCard(card, flipTop);
         card->setPos(0,0);
     }
-}
-
-Card *RandomStack::takeCard(Card *card) {
-
-    if (!mCards.isEmpty()) {
-        if (mCards.back() == card) {
-            mCards.pop_back();
-            if (!mCards.isEmpty()) {
-                mCards.back()->setFaceUp(true);
-                mTopFlipped = true;
-            } else {
-                mTopFlipped = false;
-            }
-            qDebug() << "taking from RandomStack, new Size = " << mCards.size();
-        }
-    }
-    return card;
-
-}
-
-Card *RandomStack::takeTop() {
-    Card* card{nullptr};
-
-    if (!mCards.isEmpty()) {
-        card = mCards.takeLast();
-    }
-    return card;
 }
