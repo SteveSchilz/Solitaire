@@ -343,6 +343,11 @@ void Game::onCardClicked(Card& card)
 
 void Game::onCardDoubleClicked(Card& card)
 {
+    CardStack *fromStack = dynamic_cast<CardStack*>(card.parentItem());
+    if (fromStack == nullptr) {
+        return;
+    }
+
     // Move card from Waste Pile to Foundation (Sorted Stacks Per-Suit)
     SortedStack* sStack{nullptr};
     for (Suit suit: SuitIterator()) {
@@ -353,7 +358,7 @@ void Game::onCardDoubleClicked(Card& card)
         case Suit::SPADE:  sStack = mSpades; break;
         }
 
-        if (sStack->canAdd(card)) {
+        if (fromStack->canTake(card) && sStack->canAdd(card)) {
             if (card.parentItem() == mWastePile) {
                 WasteToFoundationCommand *command = new WasteToFoundationCommand(mWastePile, sStack);
                 mUndoStack->push(command);
@@ -365,7 +370,7 @@ void Game::onCardDoubleClicked(Card& card)
     // Move card from Waste Pile to main playfield
     if (card.parentItem() == mWastePile) {
         for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
-            if (mPlayStacks[i]->canAdd(card)) {
+            if (fromStack->canTake(card) && mPlayStacks[i]->canAdd(card)) {
                 MoveToPlayfieldCommand *command = new MoveToPlayfieldCommand(mWastePile, mPlayStacks[i]);
                 mUndoStack->push(command);
                 return;
@@ -382,8 +387,7 @@ void Game::onCardDoubleClicked(Card& card)
         case Suit::SPADE:  sStack = mSpades; break;
         }
         for (int i = 0; i < NUM_PLAY_STACKS; ++i) {
-            // TODO: Ensure that only top card moves (perhaps add "canTake" method?)
-            if (card.parentItem() == mPlayStacks[i] && sStack->canAdd(card)) {
+            if (card.parentItem() == mPlayStacks[i] && mPlayStacks[i]->canTake(card) && sStack->canAdd(card)) {
                 PlayfieldToFoundationCommand *command = new PlayfieldToFoundationCommand(mPlayStacks[i], sStack);
                 mUndoStack->push(command);
                 return;
@@ -397,7 +401,7 @@ void Game::onCardDoubleClicked(Card& card)
             if (i == j) {
                 continue;
             }
-            if (card.parentItem() == mPlayStacks[i] && mPlayStacks[j]->canAdd(card)) {
+            if (card.parentItem() == mPlayStacks[i] && fromStack->canTake(card) && mPlayStacks[j]->canAdd(card)) {
                 PlayfieldToPlayfieldCommand *command = new PlayfieldToPlayfieldCommand(mPlayStacks[i], mPlayStacks[j]);
                 mUndoStack->push(command);
                 return;

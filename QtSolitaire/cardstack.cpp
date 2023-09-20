@@ -192,6 +192,11 @@ bool SortedStack::canAdd(Card& card) const
             (testValue == card.getValue()));
 }
 
+bool SortedStack::canTake(Card& card) const
+{
+    return ((mCards.size() > 0) && (&card == mCards.top()));
+}
+
 void SortedStack::addCard(Card *card, bool flipTop) {
     if (card) {
         if (!mCards.empty() && flipTop) {
@@ -375,6 +380,11 @@ bool DescendingStack::canAdd(Card& card) const
     }
     return ((testValue == card.getValue()) &&
             (testColor != card.getColor()));
+}
+
+bool DescendingStack::canTake(Card& card) const
+{
+    return ((mCards.size() > 0) && (&card == mCards.top()));
 }
 
 void DescendingStack::addCard(Card* card, bool flipTop)
@@ -594,6 +604,11 @@ void RandomStack::newGame()
 bool RandomStack::canAdd(Card& card) const
 {
     return false;
+}
+
+bool RandomStack::canTake(Card& card) const
+{
+    return ((mCards.size() > 0) && (&card == mCards.back()));
 }
 
 //TODO: QParallelAnimationGroup is not working!  WTH!

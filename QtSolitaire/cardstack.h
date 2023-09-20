@@ -34,6 +34,7 @@ public:
     virtual void newGame() = 0;
 
     virtual bool canAdd(Card& card) const = 0;
+    virtual bool canTake(Card& card) const = 0;
     virtual void addCard(Card *card, bool flipTop) = 0;
     virtual Card* takeCard(Card *card) = 0;
     virtual Card* takeTop() = 0;
@@ -92,6 +93,7 @@ public:
     virtual void newGame() override;
 
     virtual bool canAdd(Card& card) const override;
+    virtual bool canTake(Card& card) const override;
     virtual void addCard(Card *card, bool flipTop) override;
     virtual Card* takeCard(Card *card) override;
     virtual Card* takeTop() override;
@@ -140,6 +142,7 @@ public:
     virtual void newGame() override;
 
     virtual bool canAdd(Card& card) const override;
+    virtual bool canTake(Card& card) const override;
     virtual void addCard(Card *card, bool flipTop) override;
     virtual Card* takeCard(Card *card) override;
     virtual Card* takeTop() override;
@@ -190,6 +193,8 @@ public:
     virtual void newGame() override;
 
     virtual bool canAdd(Card& card) const override;
+    virtual bool canTake(Card& card) const override;
+
     virtual void addCard(Card *card, bool flipTop) override;
     virtual Card *takeCard(Card *card) override;
     virtual Card *takeTop() override;
