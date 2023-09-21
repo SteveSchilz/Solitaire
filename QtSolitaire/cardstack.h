@@ -40,8 +40,11 @@ public:
     virtual Card* takeCard(Card *card);
     virtual Card* takeTop();
 
-    /* topFlipped property helps with undo - when a card is removed from a stack the topFlipped may be set.
-       when this property is set and an undo command is executed, then we know to flip it back. */
+    /* topFlipped property helps with undo - when a card is removed from a stack the topFlipped variable may be set.
+     *  when this property is set and an undo command is executed, then we know to flip it back.
+     *
+     *  This property is valid to read only immediately after a card is removed from the stack.
+     */
     virtual bool isTopFlipped() const { return mTopFlipped; }
     virtual void setTopFlipped(bool flipped) { mTopFlipped = flipped;}
 

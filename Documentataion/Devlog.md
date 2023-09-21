@@ -4,11 +4,37 @@ Opening Vector Art:
     Inkscape -> open file -> vectorstock_38016577.ai -> Cairo Import_
 
 TODO: 
-  * Add more paint text to non-face cards. 
-  * Add zoom game? 
-  * Enable the undo/redo items based on the undo stack.  
+  * Highlight top card on stack when float over stack?
+  * Make outline thicker when mouseOver tack.
+  
+  * Add scoring.
+  * Make New Game chain
+    * Collect cards, 
+    * Shuffle 
+    * Deal  
+ * Animation/Appearance
+    * When dragging stack show entire stack
+    * Animate moving cards
+    * Fix shuffle animation
+  * Visibly Enable the undo/redo items based on the undo stack.  
     * Will require keeping a pointer to them, unless maybe I can change those to 
       inherit or own the QActions?
+      
+
+  * Gamification 
+    * Write specifications
+    * initial run shows options (Form?)
+    * Number of games per sitting (1-5)
+    * Number of sittings per day (1-4)
+    * Quit after first when. 
+    * If program is opened after that, displays a message: Next game in xx hours (03:00pm)    
+  * Add zoom game? 
+
+  * Deployment 
+  
+# Date: 09/19/23 (Sun/Mon) 6.0 Hrs
+  * Refactor the cardstack to simplify it and move a bunch of stuff to the base class
+    This significantly reduced code duplication, and 
    
 # Date: 09/12/23 (Tues) (3.5hrs)
   * Initial work on undo commands
