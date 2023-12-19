@@ -1,41 +1,12 @@
-Qt Solitaire
+# Qt Solitaire
 
-Opening Vector Art:
+**Opening Vector Art:**
     Inkscape -> open file -> vectorstock_38016577.ai -> Cairo Import_
 
-TODO: 
-  * Highlight top card on stack when float over stack?
-  * Make outline thicker when mouseOver tack.
-  
-  * Add scoring.
-  * Make New Game chain
-    * Collect cards, 
-    * Shuffle 
-    * Deal  
- * Animation/Appearance
-    * When dragging stack show entire stack
-    * Animate moving cards
-    * Fix shuffle animation
-  * Visibly Enable the undo/redo items based on the undo stack.  
-    * Will require keeping a pointer to them, unless maybe I can change those to 
-      inherit or own the QActions?
-      
-
-  * Gamification 
-    * Write specifications
-    * initial run shows options (Form?)
-    * Number of games per sitting (1-5)
-    * Number of sittings per day (1-4)
-    * Quit after first when. 
-    * If program is opened after that, displays a message: Next game in xx hours (03:00pm)    
-  * Add zoom game? 
-
-  * Deployment 
-  
 # Date: 09/19/23 (Sun/Mon) 6.0 Hrs
   * Refactor the cardstack to simplify it and move a bunch of stuff to the base class
     This significantly reduced code duplication, and 
-   
+
 # Date: 09/12/23 (Tues) (3.5hrs)
   * Initial work on undo commands
   * Working undo/redo for clicks on the mHand stack.
@@ -48,11 +19,11 @@ TODO:
     but it required the use of double pointers, so, more complex code overall.  
   * Rename "Suite" to "Suit".  This was a typo in initial design.
     
-  
+
 # Date: 09/05/23 (Tues)
   * Add ability to drag stacks of cards between different playfield stacks
   * Add Double-click to move cards to next destination.
-     
+    
 # Date: 08/31/23 (Thurs)
   * Revamp drop events so we don't need friends
     * new cardStack methods addCard and TakeCard move access to cards inside the stack where
@@ -62,7 +33,7 @@ TODO:
   * fixup dragging from RandomStack and SortedStack casses to the DescendingStacks
   * Add "clicked" signal to CardStack, wire up mHand.clicked() to make it recover waste pile
   * Remove unused "Card-Back" image from RandomStack (we draw outlines if empty).
-  
+
 # Date: 08/30/23 (Weds)
   * Write a chatGPT prompt to tell it to write a solitaire game, based on the following changes 
     from my design: 
@@ -110,9 +81,9 @@ TODO:
   * Add Deck object with shuffle and deal methods
   * Add Card::click() signal, connected to Game::onCardClicked()
   * Add ClickableGraphicsTextItem, create three clickable items on bottom of screen 
-  
-  
-    
+
+
+​    
 # Date  08/22/23   4.0 hrs Github, Readme, Game Object, RandomStack Object
   * Put project on GitHub (private, for now)
   * Add initial readme
@@ -126,7 +97,7 @@ TODO:
     * Licensing See [Stack Overflow] Does App Store accept Qt Linkede App LGPLv3](https://stackoverflow.com/questions/35068054/does-app-store-accept-qt-app-linked-with-qt-library-lgplv3)
     * Technical: App Store see [Uploading a Python App to the Mac App Store(October 22](https://github.com/nyavramov/python_app_mac_app_store)
     * [Notes on Apple Developer Forum]()
- 
+
 # Date: 08/20/23   5.0 hrs Switched to SVG Renderer from QPixmap. 
   * **SVG Images** Found two sets of cards on [VectorStock]
     * [Fantasy Deck](https://www.vectorstock.com/royalty-free-vector/set-playing-cards-printable-poker-game-kit-vector-38016577)
@@ -146,10 +117,11 @@ TODO:
     
     * **Unit Testing QT code**
     * Qt is such an all-encompassing system, that I have difficulty seeing how to unit test it. 
-    For example, my "Card" class inherits from QGraphicsItem: the UI is really baked in to the
-    class.  I saw an example in the Conway game [Michael Abrash-Conway's Game of Life](https://www.phatcode.net/res/224/files/html/ch17/17-01.html) 
-    where they nicely split the UI from the game code, and did a bunch of profileing too. 
-       
+      For example, my "Card" class inherits from QGraphicsItem: the UI is really baked in to the
+      class.  I saw an example in the Conway game [Michael Abrash-Conway's Game of Life](https://www.phatcode.net/res/224/files/html/ch17/17-01.html) 
+      where they nicely split the UI from the game code, and did a bunch of profileing too. 
+      
+    
     **Qt Vs StdLib**
     One of my goals is to learn about the standard library, so QVector or std::vector?  
     QQueue vs std::queue?   I think in Qt code you should use Qt data structures..
@@ -159,7 +131,7 @@ TODO:
     
        
 # Date  08/18/23    3.5 Hours: Initial Development.
- 
+
 Began copying code out of "Drag and Drop Robot", converting the "ColorItem" value to 
 a card. Notes:
 
@@ -169,7 +141,7 @@ a card. Notes:
    take less space. 
  * Tried to use DALL-E to generate images.  It's total trash. 
  * Got cards to appear as circles with a letter for suite, with an image for j/Q/K. 
- 
+
 
 # Date: 08/16/2023    2.0 hrs Initial Specifications
  * Developed initial set of Solitaire rules and specifications, and a simple class diagram.
@@ -182,5 +154,3 @@ a card. Notes:
        order from Ace to King
      * AlternatingStacks: Contains both facedown cards and faceup cards. 
        FaceUp cards must be sorted in decreasing order, with alternating colors. 
-       
-    

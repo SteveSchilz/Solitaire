@@ -1,0 +1,12 @@
+Survey of other Solitaire Implementations
+
+
+* GitHub:  https://github.com/iUltimateLP/solitaire
+* Authors:  iUltimateLP Johnny / Annie Cha
+* Notes:
+    Interesting, this is a Qwidget implemenation of Solitaire.
+    Basically similar to mine in intent:
+      Cards inherit QWidget
+      CardStack inherits Qwidget, Holds QList of Cards
+        * Base Class CardStack holds a QList - Used for all stacks. 
+        
