@@ -66,6 +66,7 @@ signals:
     void doubleClicked(Card& card);
 
 protected:
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
@@ -81,6 +82,7 @@ protected:
 
     bool mFaceUp;             ///< True if card face is showing, otherwise back of card is visible
     bool mMouseDown;
+    bool mHover;
     QColor mColor;
     QString mPaintText;
     QGraphicsSvgItem *mImage;

@@ -26,6 +26,7 @@ Card::Card(CardValue v, Suit s, QGraphicsItem *parent)
     :QGraphicsObject(parent)
     ,mFaceUp(true)
     ,mMouseDown(false)
+    ,mHover(false)
     ,mValue(v)
     ,mSuit(s)
     ,mImage{nullptr}
@@ -37,6 +38,7 @@ Card::Card(CardValue v, Suit s, QGraphicsItem *parent)
     }
     setCursor(Qt::OpenHandCursor);
     setAcceptedMouseButtons(Qt::LeftButton);
+    setAcceptHoverEvents(true);
 
     const char *imgPath = getImagePath();
     if (imgPath != nullptr) {
@@ -89,6 +91,8 @@ QRectF Card::boundingRect() const
 
 void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    int penWidth = mHover ? 2 : 1;
+
     Q_UNUSED(option);
     Q_UNUSED(widget);
     painter->save();
@@ -98,6 +102,16 @@ void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
                         .arg(this->scenePos().rx()).arg(this->scenePos().ry());
     }
 
+    // Draw Drop shadow
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(Qt::darkGray);
+    painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
+
+    // Draw square
+    painter->setPen(QPen(Qt::black, penWidth));
+    painter->setBrush(QBrush(Qt::white));
+    painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
+
     if (mImage) {
         // NOTE: QGraphicsSvgItem has it's own paint method!
         //       Code below works, but performs a second paint on the image.
@@ -106,21 +120,17 @@ void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     //    painter->translate(QPointF(-(CARD_WIDTH/(SVG_SCALEF*2)),  -(CARD_HEIGHT/(SVG_SCALEF*2))));
     //    mImage->paint(painter, option, widget);
 
+        if (mHover) {
+
+        }
+
     } else {
-        // Draw Drop shadow
-        painter->setPen(Qt::NoPen);
-        painter->setBrush(Qt::darkGray);
-        painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
-
-        // Draw square
-        painter->setPen(QPen(Qt::black, 1));
-        painter->setBrush(QBrush(Qt::white));
-        painter->drawRoundedRect(boundingRect(), CARD_RADIUS, CARD_RADIUS);
-
         // And the text
         painter->setPen(mColor);
         painter->drawText(QPoint{-(CARD_WIDTH/2)+SHDW+1, -(CARD_WIDTH/2)+SHDW+1}, mPaintText);
     }
+
+
     painter->restore();
 }
 
@@ -203,8 +213,15 @@ void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     setCursor(Qt::OpenHandCursor);
 }
 
+void Card::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    mHover = true;
+    QGraphicsItem::hoverEnterEvent(event);
+}
+
 void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
+    mHover = false;
     mMouseDown = false;
     QGraphicsItem::hoverLeaveEvent(event);
 }

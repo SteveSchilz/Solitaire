@@ -4,8 +4,6 @@ TODO.MD
 
 **Improvements - Appearance**
 
-  * Highlight top card on stack when float over stack?
-  * Make outline thicker when mouseOver stack.
   * Make New Game chain together the following operations:
     * Collect cards, 
     * Shuffle 
