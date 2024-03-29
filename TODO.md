@@ -15,10 +15,18 @@ TODO.MD
   * Visibly Enable the undo/redo items based on the undo stack.  
     * Will require keeping a pointer to them, unless maybe I can change those to 
       inherit or own the QActions?
+  * Show entire stack of cards when draging on playfield-to-playfield
+     * Mime Image created in Card::MouseMoveEvent (only current card) 
+     * DragPlayfieldToPlayfieldCommand - calls TakeCards(*mDroppedCard)
+        * happens at the point of the drop. 
+     * So, currently the point where the drag is initiated does not know if we are on stack. 
 
 **Features**
 
   * Add scoring.
+    * Write scoring spec
+    * implement scoring
+    
   * **Gamification** 
     * Write specifications
     * initial run shows options (Form?)
@@ -40,6 +48,7 @@ TODO.MD
 
 
 # DONE  
+ * Highlight cards when mouseover 
  * change to class enums, add [iterator code from stack overflow](https://stackoverflow.com/questions/261963/how-can-i-iterate-over-an-enum)
  * Revisit the scaling of everything, and the boundary rects.  Try to understand it better. 
 

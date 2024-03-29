@@ -5,6 +5,8 @@
 
 # Date: 12/26/23 (Tues) 2.0 hrs
    * Add thicker outline when mouseover cards
+   * Research how to show entire stack of cards when dragging playfield-to-playfield
+     (See todo list)
 
 # Date: 09/19/23 (Sun/Mon) 6.0 Hrs
   * Refactor the cardstack to simplify it and move a bunch of stuff to the base class

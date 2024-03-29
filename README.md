@@ -29,6 +29,15 @@ All code was written by me.  I set a goal to code this project without AI input,
 
 # Developer Notes
 
+## OSX Platform updates cause file not found errors 
+After a new version of OSX is installed, the XCode SDK may be updated, resulting in file not found errors
+in the SDK when attempting to build.  These can be resolved as follows
+ 
+  1. Build -> Clear CMake Configuration
+  2. Build -> Run CMake
+  3. Rebuild project
+
+## CMAKE Limitations in Qt 
 * Because this is a CMAKE project, some Qt Creator features, such as "Add Existing file" are not available.  You must edit the CMakeLists.txt file to add folders and files 
 * I keep a record of work done each day, which includes accomplishments, research notes, and testing notes.  The developers log is found at [Documentation/Devlog.md](./Documentation/Devlog.md)
 * [TODO List](./TODO.md) - Is it ever done? 
