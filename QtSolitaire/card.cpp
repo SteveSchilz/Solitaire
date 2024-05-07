@@ -13,6 +13,7 @@
 #include <QDebug>
 #include <QGraphicsSvgItem>
 
+static bool debugged = false;
 /******************************************************************************
   * Card Implementation
   *****************************************************************************/
@@ -42,14 +43,14 @@ Card::Card(CardValue v, Suit s, QGraphicsItem *parent)
 
     const char *imgPath = getImagePath();
     if (imgPath != nullptr) {
-        mImage = new QGraphicsSvgItem(getImagePath(), this);
+        mImage = new QGraphicsSvgItemLogged(getImagePath(), this);
         mImage->setParent(this);
         mImage->setScale(SVG_SCALEF);
         mImage->setTransformOriginPoint(QPointF(-CARD_WIDTH/2, -3-CARD_HEIGHT/2));
         mImage->setVisible(true);
     }
 
-    mBackImage = new QGraphicsSvgItem(":/images/Card-Back.svg", this);
+    mBackImage = new QGraphicsSvgItemLogged(":/images/Card-Back.svg", this);
     mBackImage->setParent(this);
     mBackImage->setScale(SVG_SCALEF);
     mBackImage->setTransformOriginPoint(QPointF(-CARD_WIDTH/2, -3-CARD_HEIGHT/2));
@@ -66,11 +67,18 @@ Card::Card(CardValue v, Suit s, QGraphicsItem *parent)
 
 Card::~Card() {
 
+    if (! debugged) {
+        std::cout << "Obj:" << this << std::endl;
+        std::cout << "mBIParent: " << mBackImage->parent() << std::endl;
+        debugged = true;
+    }
+
     // Note: these images are deleted via being children of the card ;)
     //       Refer to https://doc.qt.io/qt-6/objecttrees.html if
     //       you are unfamiliar with qt memory management
     //    delete mImage;
     //    delete mBackImage;
+
     if (debugLevel >= DEBUG_LEVEL::VERBOSE) {
         qDebug() << "Destroyed Card" << static_cast<QGraphicsItem*>(this);
     }

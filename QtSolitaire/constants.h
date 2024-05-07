@@ -25,6 +25,6 @@ enum class DEBUG_LEVEL {
     NORMAL,
     VERBOSE
 };
-static const DEBUG_LEVEL debugLevel{DEBUG_LEVEL::NORMAL};
+static const DEBUG_LEVEL debugLevel{DEBUG_LEVEL::VERBOSE};
 
 #endif // CONSTANTS_H

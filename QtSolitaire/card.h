@@ -6,8 +6,23 @@
 #include <QChar>
 #include <QColor>
 #include <QGraphicsObject>
+#include <QSharedPointer>
 
-QT_FORWARD_DECLARE_CLASS(QGraphicsSvgItem)
+//QT_FORWARD_DECLARE_CLASS(QGraphicsSvgItem)
+#include <QGraphicsSvgItem>
+#include <iostream>
+
+class QGraphicsSvgItemLogged : public QGraphicsSvgItem {
+public:
+    QGraphicsSvgItemLogged(const QString &fileName, QGraphicsObject *parent = nullptr)
+        : QGraphicsSvgItem(fileName, parent) {
+
+        std::cout << "Construct QGSvgItem with parent "<< this->parent() << std::endl;
+    }
+    ~QGraphicsSvgItemLogged() {
+        std::cout << "Destruct QGSvgItem" << std::endl;
+    }
+};
 
 enum class CardValue {
     ACE = 1,
