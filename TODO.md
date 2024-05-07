@@ -12,6 +12,7 @@ TODO.MD
    * When dragging stack show entire stack
    * Animate moving cards
    * Fix shuffle animation (Qt Bug? Try Windows)
+   * Spread out the top three cards on the waste pile 
   * Visibly Enable the undo/redo items based on the undo stack.  
     * Will require keeping a pointer to them, unless maybe I can change those to 
       inherit or own the QActions?
