@@ -43,12 +43,14 @@ Card::Card(CardValue v, Suit s, QGraphicsItem *parent)
     const char *imgPath = getImagePath();
     if (imgPath != nullptr) {
         mImage = new QGraphicsSvgItem(getImagePath(), this);
+        mImage->setParent(this);
         mImage->setScale(SVG_SCALEF);
         mImage->setTransformOriginPoint(QPointF(-CARD_WIDTH/2, -3-CARD_HEIGHT/2));
         mImage->setVisible(true);
     }
 
     mBackImage = new QGraphicsSvgItem(":/images/Card-Back.svg", this);
+    mBackImage->setParent(this);
     mBackImage->setScale(SVG_SCALEF);
     mBackImage->setTransformOriginPoint(QPointF(-CARD_WIDTH/2, -3-CARD_HEIGHT/2));
     mBackImage->setVisible(false);
@@ -64,6 +66,11 @@ Card::Card(CardValue v, Suit s, QGraphicsItem *parent)
 
 Card::~Card() {
 
+    // Note: these images are deleted via being children of the card ;)
+    //       Refer to https://doc.qt.io/qt-6/objecttrees.html if
+    //       you are unfamiliar with qt memory management
+    //    delete mImage;
+    //    delete mBackImage;
     if (debugLevel >= DEBUG_LEVEL::VERBOSE) {
         qDebug() << "Destroyed Card" << static_cast<QGraphicsItem*>(this);
     }

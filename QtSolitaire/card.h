@@ -85,9 +85,9 @@ protected:
     bool mHover;
     QColor mColor;
     QString mPaintText;
-    QGraphicsSvgItem *mImage;
-
-    QGraphicsSvgItem *mBackImage;
+    QGraphicsSvgItemLogged *mImage;           // Note: these are deleted via being children of the card ;)
+    QGraphicsSvgItemLogged *mBackImage;       //       Refer to https://doc.qt.io/qt-6/objecttrees.html if
+                                              //       you are unfamiliar with qt memory management
 
     CardValue mValue;
     Suit mSuit;
